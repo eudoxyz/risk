@@ -5,7 +5,7 @@ let mainState = {
   },
 
   create: function() {
-
+    game.canvas.oncontextmenu = function (e) { e.preventDefault(); }
     game.stage.backgroundColor = "#1291ee";
 
     let drawn = [...Array(42).keys()].map(i => Array(42)); // 42x42 niz
