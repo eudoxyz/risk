@@ -11,9 +11,6 @@ let mainState = {
     let cvorovi = game.add.group();
     cvorovi.inputEnableChildren = true;
 
-    /*KOORDINATE.forEach(function(k) {
-      this.graphics.drawCircle(k[0], k[1], VERTICE_DIAMETER);
-    }, this);*/
     for (let i = 0; i < KOORDINATE.length; i++) {
       let cvor = game.add.graphics();
       cvor.lineStyle(4, 0xF3F3F3, 1);
