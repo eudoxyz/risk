@@ -2,6 +2,8 @@ let menuState = {
 
   create: function() {
 
+    game.add.audio('nightRain').play();
+
     const message = game.add.text(
       game.world.centerX,
       80,
