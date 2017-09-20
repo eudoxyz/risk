@@ -13,9 +13,13 @@ let mainState = {
       this.graphics.drawCircle(k[0], k[1], VERTICE_DIAMETER);
     }, this);
 
+    let drawn = [...Array(42).keys()].map(i => Array(42)); // 42x42 niz
     for (let i = 0; i < GRAF.length; i++) {
       for (let j = 0; j < GRAF[i].length; j++) {
-        this.drawEdge(KOORDINATE[i], KOORDINATE[GRAF[i][j]]);
+        if (!drawn[i][GRAF[i][j]]) {
+          this.drawEdge(KOORDINATE[i], KOORDINATE[GRAF[i][j]], [i, GRAF[i][j]]);
+          drawn[i][GRAF[i][j]] = drawn[GRAF[i][j]][i] = true;
+        }
       }
     }
 
@@ -25,7 +29,7 @@ let mainState = {
 
   },
 
-  drawEdge: function(src, dst) {
+  drawEdge: function(src, dst, pair) {
 
     this.graphics.lineStyle(2, 0xF3F3F3, 1);
 
@@ -44,8 +48,34 @@ let mainState = {
     const DST_X = dst[0] + Math.cos(Math.PI + angle) * (VERTICE_DIAMETER / 2);
     const DST_Y = dst[1] - Math.sin(Math.PI + angle) * (VERTICE_DIAMETER / 2);
 
-    this.graphics.moveTo(SRC_X, SRC_Y);
-    this.graphics.lineTo(DST_X, DST_Y);
+    if (pair[0] === 0 && pair[1] === 31) {
+
+      const CURVATURE = 650;
+      const MIDDLE_X = (src[0] + dst[0]) / 2;
+      const MIDDLE_Y = (src[1] + dst[1]) / 2;
+      const DISTANCE = Math.sqrt(Math.pow(Math.abs(src[0] - dst[0]), 2) + Math.pow(Math.abs(src[1] - dst[1]), 2));
+      const CENTER_X = MIDDLE_X + Math.sin(angle) * CURVATURE;
+      const CENTER_Y = MIDDLE_Y + Math.cos(angle) * CURVATURE;
+      const RADIUS = Math.sqrt(Math.pow(CURVATURE, 2) + Math.pow(DISTANCE / 2, 2));
+
+      this.graphics.arc(CENTER_X, CENTER_Y, RADIUS, - Math.asin(CURVATURE / RADIUS) - 0.02, Math.PI + Math.asin(CURVATURE / RADIUS) + 0.02, true, 96);
+
+    } else {
+
+      this.graphics.moveTo(SRC_X, SRC_Y);
+      this.graphics.lineTo(DST_X, DST_Y);
+
+    }
+
+  },
+
+  drawArc: function(src, dst, curvature = 0) {
+
+    const MIDDLE_X = (src[0] + dst[0]) / 2;
+    const MIDDLE_Y = (src[1] + dst[1]) / 2;
+    const CENTER =
+
+    this.graphics.arc(MIDDLE_X, MIDDLE_Y)
 
   }
 
