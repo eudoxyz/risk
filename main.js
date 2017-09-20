@@ -31,8 +31,8 @@ let mainState = {
 
     try {
 
-      const ADJ = dst[0] - src[0]; // suprotna strana
-      const OPP = -(dst[1] - src[1]); // nalegla strana
+      const ADJ = dst[0] - src[0]; // nalegla strana
+      const OPP = -(dst[1] - src[1]); // suprotna strana
       let angle = Math.atan(Math.abs(OPP) / Math.abs(ADJ));
 
       if (ADJ >= 0 && OPP >= 0) ; // prvi kvadrant
