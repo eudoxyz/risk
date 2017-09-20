@@ -1,13 +1,7 @@
-let mainState = {
-
-  preload: function() {
-
-  },
+let playState = {
 
   create: function() {
 
-    game.canvas.oncontextmenu = function (e) { e.preventDefault(); }
-    game.stage.backgroundColor = "#1291ee";
     drawEdges();
     drawVertices();
 
@@ -18,11 +12,6 @@ let mainState = {
   },
 
 };
-
-
-const game = new Phaser.Game(WIDTH, HEIGHT, Phaser.AUTO, 'root');
-game.state.add('main', mainState);
-game.state.start('main');
 
 
 // FUNCTIONS
@@ -88,11 +77,10 @@ function drawVertices() {
 
     cvor.drawCircle(KOORDINATE[i][0], KOORDINATE[i][1], VERTICE_DIAMETER);
     cvor.endFill();
-    cvor.value = 0;
-    cvor.valueText = game.add.text(KOORDINATE[i][0], KOORDINATE[i][1], '0', { font: '16px Arial', fill: '#ffffff' });
-    cvor.valueText.anchor.setTo(0.5, 0.4);
+    cvor.tenkici = game.add.text(KOORDINATE[i][0], KOORDINATE[i][1], '0', { font: '16px Arial', fill: '#ffffff' });
+    cvor.tenkici.anchor.setTo(0.5, 0.4);
     cvor.events.onInputDown.add(function(cvor) {
-      cvor.valueText.text = String(++cvor.value);
+      cvor.tenkici.text = String(++game.global.tenkici[cvorovi.getChildIndex(cvor)]);
     });
     cvorovi.add(cvor);
   }
