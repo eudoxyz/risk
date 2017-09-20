@@ -5,7 +5,7 @@ let mainState = {
   },
 
   create: function() {
-
+    game.canvas.oncontextmenu = function (e) { e.preventDefault(); }
     game.stage.backgroundColor = "#1291ee";
     drawEdges();
     drawVertices();
