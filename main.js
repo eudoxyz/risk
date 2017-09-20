@@ -29,31 +29,23 @@ let mainState = {
 
     this.graphics.lineStyle(2, 0xF3F3F3, 1);
 
-    try {
+    const ADJ = dst[0] - src[0]; // nalegla strana
+    const OPP = -(dst[1] - src[1]); // suprotna strana
+    let angle = Math.atan(Math.abs(OPP) / Math.abs(ADJ));
 
-      const ADJ = dst[0] - src[0]; // nalegla strana
-      const OPP = -(dst[1] - src[1]); // suprotna strana
-      let angle = Math.atan(Math.abs(OPP) / Math.abs(ADJ));
+    if (ADJ >= 0 && OPP >= 0) ; // prvi kvadrant
+    else if (ADJ < 0 && OPP >= 0) angle = Math.PI - angle; // drugi kvadrant
+    else if (ADJ < 0 && OPP < 0) angle = Math.PI + angle; // treci kvadrant
+    else angle = 2 * Math.PI - angle; // cetvrti kvadrant
 
-      if (ADJ >= 0 && OPP >= 0) ; // prvi kvadrant
-      if (ADJ < 0 && OPP >= 0) angle = Math.PI - angle; // drugi kvadrant
-      if (ADJ < 0 && OPP < 0) angle = Math.PI + angle; // treci kvadrant
-      if (ADJ >= 0 && OPP < 0) angle = 2 * Math.PI - angle; // cetvrti kvadrant
+    const SRC_X = src[0] + Math.cos(angle) * (VERTICE_DIAMETER / 2);
+    const SRC_Y = src[1] - Math.sin(angle) * (VERTICE_DIAMETER / 2);
 
-      const SRC_X = src[0] + Math.cos(angle) * (VERTICE_DIAMETER / 2);
-      const SRC_Y = src[1] - Math.sin(angle) * (VERTICE_DIAMETER / 2);
+    const DST_X = dst[0] + Math.cos(Math.PI + angle) * (VERTICE_DIAMETER / 2);
+    const DST_Y = dst[1] - Math.sin(Math.PI + angle) * (VERTICE_DIAMETER / 2);
 
-      const DST_X = dst[0] + Math.cos(Math.PI + angle) * (VERTICE_DIAMETER / 2);
-      const DST_Y = dst[1] - Math.sin(Math.PI + angle) * (VERTICE_DIAMETER / 2);
-
-      this.graphics.moveTo(SRC_X, SRC_Y);
-      this.graphics.lineTo(DST_X, DST_Y);
-
-    } catch(err) {
-
-      ;
-
-    }
+    this.graphics.moveTo(SRC_X, SRC_Y);
+    this.graphics.lineTo(DST_X, DST_Y);
 
   }
 
