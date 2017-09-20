@@ -1,13 +1,16 @@
 let mainState = {
 
   preload: function() {
-
+    game.load.audio('nightRain', [ 'airtone_-_nightRain.ogg']);
   },
 
   create: function() {
 
     game.canvas.oncontextmenu = function (e) { e.preventDefault(); }
     game.stage.backgroundColor = "#1291ee";
+
+    music = game.add.audio('nightRain');
+    music.play();
     drawEdges();
     drawVertices();
 
