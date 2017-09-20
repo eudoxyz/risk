@@ -7,11 +7,29 @@ let mainState = {
   create: function() {
 
     this.graphics = game.add.graphics();
+    game.stage.backgroundColor = "#1291ee";    
     this.graphics.lineStyle(4, 0xF3F3F3, 1);
 
-    KOORDINATE.forEach(function(k) {
+    /*KOORDINATE.forEach(function(k) {
       this.graphics.drawCircle(k[0], k[1], VERTICE_DIAMETER);
-    }, this);
+    }, this);*/
+    for (let i=0; i<KOORDINATE.length; i++) {
+      if (i< 9){
+        this.graphics.beginFill(0xFF0000, 1);
+      } else if (i < 13) {
+        this.graphics.beginFill(0x006600, 1);
+      } else if (i<20) {
+        this.graphics.beginFill(0x0033cc, 1);
+      } else if (i<26) {
+        this.graphics.beginFill(0x000000, 1);
+      } else if (i<38) {
+        this.graphics.beginFill(0xffcc00, 1);
+      } else {
+        this.graphics.beginFill(0xcc00cc, 1);
+      }
+      this.graphics.drawCircle(KOORDINATE[i][0], KOORDINATE[i][1], VERTICE_DIAMETER);
+      this.graphics.endFill();
+    }
 
     let drawn = [...Array(42).keys()].map(i => Array(42)); // 42x42 niz
     for (let i = 0; i < GRAF.length; i++) {
