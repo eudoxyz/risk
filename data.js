@@ -73,8 +73,8 @@ const KONTITENTI = {
   'southAmerica': [...Array(13).keys()].slice(9),
   'europe': [...Array(20).keys()].slice(13),
   'africa': [...Array(26).keys()].slice(20),
-  'africa': [...Array(38).keys()].slice(26),
-  'asia': [...Array(42).keys()].slice(38)
+  'asia': [...Array(38).keys()].slice(26),
+  'australia': [...Array(42).keys()].slice(38)
 
 }
 
