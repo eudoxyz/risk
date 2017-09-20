@@ -2,11 +2,9 @@ let menuState = {
 
   create: function() {
 
-    game.add.audio('nightRain').play();
-
     const message = game.add.text(
       game.world.centerX,
-      80,
+      game.world.centerY,
       'Klikni mišem za početak',
       { font: '48px Arial', fill: '#F3F3F3' }
     );

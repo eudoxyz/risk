@@ -2,6 +2,7 @@ let playState = {
 
   create: function() {
 
+    game.add.audio('nightRain').play();
     drawEdges();
     drawVertices();
 
