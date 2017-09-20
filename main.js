@@ -6,29 +6,39 @@ let mainState = {
 
   create: function() {
 
-    this.graphics = game.add.graphics();
-    game.stage.backgroundColor = "#1291ee";    
-    this.graphics.lineStyle(4, 0xF3F3F3, 1);
+    game.stage.backgroundColor = "#1291ee";
+
+    let cvorovi = game.add.group();
+    cvorovi.inputEnableChildren = true;
 
     /*KOORDINATE.forEach(function(k) {
       this.graphics.drawCircle(k[0], k[1], VERTICE_DIAMETER);
     }, this);*/
-    for (let i=0; i<KOORDINATE.length; i++) {
-      if (i< 9){
-        this.graphics.beginFill(0xFF0000, 1);
+    for (let i = 0; i < KOORDINATE.length; i++) {
+      let cvor = game.add.graphics();
+      cvor.lineStyle(4, 0xF3F3F3, 1);
+      if (i < 9){
+        cvor.beginFill(0xFF0000, 1);
       } else if (i < 13) {
-        this.graphics.beginFill(0x006600, 1);
-      } else if (i<20) {
-        this.graphics.beginFill(0x0033cc, 1);
-      } else if (i<26) {
-        this.graphics.beginFill(0x000000, 1);
-      } else if (i<38) {
-        this.graphics.beginFill(0xffcc00, 1);
+        cvor.beginFill(0x006600, 1);
+      } else if (i < 20) {
+        cvor.beginFill(0x0033cc, 1);
+      } else if (i < 26) {
+        cvor.beginFill(0x000000, 1);
+      } else if (i < 38) {
+        cvor.beginFill(0xffcc00, 1);
       } else {
-        this.graphics.beginFill(0xcc00cc, 1);
+        cvor.beginFill(0xcc00cc, 1);
       }
-      this.graphics.drawCircle(KOORDINATE[i][0], KOORDINATE[i][1], VERTICE_DIAMETER);
-      this.graphics.endFill();
+      cvor.drawCircle(KOORDINATE[i][0], KOORDINATE[i][1], VERTICE_DIAMETER);
+      cvor.endFill();
+      cvor.value = 0;
+      cvor.valueText = game.add.text(KOORDINATE[i][0], KOORDINATE[i][1], '0', { font: '16px Arial', fill: '#ffffff' });
+      cvor.valueText.anchor.setTo(0.5, 0.4);
+      cvor.events.onInputDown.add(function(cvor) {
+        cvor.valueText.text = String(++cvor.value);
+      });
+      cvorovi.add(cvor);
     }
 
     let drawn = [...Array(42).keys()].map(i => Array(42)); // 42x42 niz
@@ -49,7 +59,8 @@ let mainState = {
 
   drawEdge: function(src, dst, pair) {
 
-    this.graphics.lineStyle(2, 0xF3F3F3, 1);
+    let grane = game.add.graphics();
+    grane.lineStyle(2, 0xF3F3F3, 1);
 
     // posmatramo pravougli trougao u kojem centar prvog i centar drugog cvora obrazuju hipotenuzu
     // interesuje nas ugao nad x-osom koji zaklapa hipotenuza
@@ -82,13 +93,13 @@ let mainState = {
       // 0.02 je hardcoded offset za luk da bi pocinjao i zavrsavao se na ivicama cvorova
       // vrednost je pronadjena trial & error postupkom
       // nema potrebe da se generalizuje jer se pojavljuje samo na ovom mestu
-      this.graphics.arc(CENTER_X, CENTER_Y, RADIUS, - Math.asin(CURVATURE / RADIUS) - 0.02, Math.PI + Math.asin(CURVATURE / RADIUS) + 0.02, true, 96);
+      grane.arc(CENTER_X, CENTER_Y, RADIUS, - Math.asin(CURVATURE / RADIUS) - 0.02, Math.PI + Math.asin(CURVATURE / RADIUS) + 0.02, true, 96);
 
     // sve ostale grane
     } else {
 
-      this.graphics.moveTo(SRC_X, SRC_Y);
-      this.graphics.lineTo(DST_X, DST_Y);
+      grane.moveTo(SRC_X, SRC_Y);
+      grane.lineTo(DST_X, DST_Y);
 
     }
 
