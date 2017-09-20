@@ -31,7 +31,7 @@ let mainState = {
 
     try {
 
-      const ADJ = dst[0] - src[0]; // suportna strana
+      const ADJ = dst[0] - src[0]; // suprotna strana
       const OPP = -(dst[1] - src[1]); // nalegla strana
       let angle = Math.atan(Math.abs(OPP) / Math.abs(ADJ));
 
