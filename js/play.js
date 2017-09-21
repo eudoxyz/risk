@@ -1,6 +1,5 @@
 const playState = {
 
-
   create: function() {
 
     game.add.audio('nightRain').play();
@@ -13,6 +12,8 @@ const playState = {
 
   update: function() {
 
+    //
+
   },
 
   // ================ //
@@ -20,7 +21,7 @@ const playState = {
   // ================ //
 
   drawEdge: function(src, dst, pair) {
-    let grane = game.add.graphics();
+    const grane = game.add.graphics();
     grane.lineStyle(2, 0xF3F3F3, 1);
 
     // grana od aljaske do kamcatke
@@ -45,7 +46,7 @@ const playState = {
 
 
   drawEdges: function() {
-    let drawn = [...Array(42).keys()].map(i => Array(42)); // 42 x 42 niz
+    const drawn = [...Array(42).keys()].map(i => Array(42)); // 42 x 42 niz
     for (let i = 0; i < GRAF.length; i++) {
       for (let j = 0; j < GRAF[i].length; j++) {
         if (!drawn[i][GRAF[i][j]]) {
@@ -58,12 +59,12 @@ const playState = {
 
 
   drawVertices: function() {
-    let cvorovi = game.add.group();
+    const cvorovi = game.add.group();
     cvorovi.inputEnableChildren = true;
 
     for (let i = 0; i < KOORDINATE.length; i++) {
 
-      let cvor = game.add.graphics();
+      const cvor = game.add.graphics();
       cvor.lineStyle(4, 0xF3F3F3, 1);
 
       let color;
@@ -95,6 +96,6 @@ const playState = {
       cvorovi.add(cvor);
     }
 
-  }
+  },
 
 };
