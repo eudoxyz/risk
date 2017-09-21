@@ -258,6 +258,14 @@ const playState = {
     this.tickSound = game.add.audio('tick');
     var s = game.add.sprite(80, 0, 'sound');
 
+    this.territoryLabel = game.add.text(
+      game.world.width - 20,
+      game.world.top + 20,
+      '',
+      { font: '16px Arial', fill: '#F3F3F3', boundsAlignH: 'right' }
+    );
+    this.territoryLabel.anchor.setTo(1, 0);
+
     this.drawEdges();
     this.drawVertices();
   },
@@ -349,11 +357,13 @@ const playState = {
 
       cvor.events.onInputOver.add(function(cvor) {
         game.add.tween(cvor.scale).to({ x: 1.5, y: 1.5 }, 100).start();
-      });
+        this.territoryLabel.text = TERITORIJE[cvorovi.getChildIndex(cvor)];
+      }, this);
 
       cvor.events.onInputOut.add(function(cvor) {
         game.add.tween(cvor.scale).to({ x: 1, y: 1 }, 200).start();
-      });
+        this.territoryLabel.text = '';
+      }, this);
 
       cvorovi.add(cvor);
     }
