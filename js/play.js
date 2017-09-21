@@ -64,7 +64,7 @@ const playState = {
 
     for (let i = 0; i < KOORDINATE.length; i++) {
 
-      const cvor = game.add.graphics();
+      const cvor = game.add.graphics(KOORDINATE[i][0], KOORDINATE[i][1]);
       cvor.lineStyle(4, 0xF3F3F3, 1);
 
       let color;
@@ -83,18 +83,30 @@ const playState = {
       }
       cvor.beginFill(color, 1);
 
-      cvor.drawCircle(KOORDINATE[i][0], KOORDINATE[i][1], VERTICE_DIAMETER);
+      cvor.drawCircle(0, 0, VERTICE_DIAMETER);
       cvor.endFill();
       cvor.data.tenkici = game.add.text(KOORDINATE[i][0], KOORDINATE[i][1], '0', { font: '16px Arial', fill: '#ffffff' });
       cvor.data.tenkici.anchor.setTo(0.5, 0.4);
+
       cvor.events.onInputDown.add(function(cvor, pointer) {
         if (pointer.leftButton.isDown) {
           cvor.data.tenkici.text = String(++game.global.tenkici[cvorovi.getChildIndex(cvor)]);
           this.tickSound.play();
         }
       }, this);
+
+      cvor.events.onInputOver.add(function(cvor) {
+        game.add.tween(cvor.scale).to({ x: 1.5, y: 1.5 }, 100).start();
+      });
+
+      cvor.events.onInputOut.add(function(cvor) {
+        game.add.tween(cvor.scale).to({ x: 1, y: 1 }, 200).start();
+      });
+
       cvorovi.add(cvor);
     }
+
+    cvorovi.setAll('input.useHandCursor', true);
 
   },
 
