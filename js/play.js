@@ -5,11 +5,9 @@ const playState = {
     game.add.audio('nightRain').play();
     this.tickSound = game.add.audio('tick');
     var s = game.add.sprite(80, 0, 'sound');
-    
-    
+
     this.drawEdges();
     this.drawVertices();
-    var s = game.add.sprite(80, 0, 'sound');
   },
 
   update: function() {
