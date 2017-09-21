@@ -20,7 +20,7 @@ module.exports = function(grunt) {
 
     babel: {
       options: {
-        sourceMap: true
+        // sourceMap: true
       },
       dist: {
         files: {
@@ -36,10 +36,12 @@ module.exports = function(grunt) {
       }
     },
 
+    clean: ['js/bundle_es6.js', 'js/bundle.js'],
+
     watch: {
       scripts: {
         files: ['js/*.js'],
-        tasks: ['default'],
+        tasks: ['concat'],
         options: {
           spawn: false
         }
@@ -51,8 +53,10 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-babel');
   grunt.loadNpmTasks('grunt-contrib-uglify');
+  grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-watch');
 
-  grunt.registerTask('default', ['concat', 'babel', 'uglify']);
+  grunt.registerTask('prod', ['concat', 'babel', 'uglify', 'clean']);
+  grunt.registerTask('default', ['concat']);
 
 }
