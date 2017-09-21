@@ -9,6 +9,7 @@ const playState = {
     this.tickSound = game.add.audio('tick');
 
     this.muteButton = game.add.button(20, 20, 'zvuk', this.toggleSound, this);
+    this.muteButton.frame = 1;
     
     this.territoryLabel = game.add.text(
       game.world.width - 20,
@@ -128,6 +129,6 @@ const playState = {
     // When 'game.sound.mute = true', Phaser will mute the game
     game.sound.mute = ! game.sound.mute;
     // Change the frame of the button
-    this.muteButton.frame = game.sound.mute ? 1 : 0;
+    this.muteButton.frame = game.sound.mute ? 0 : 1;
   },   
 };
