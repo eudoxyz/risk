@@ -1,4 +1,4 @@
-let menuState = {
+const menuState = {
 
   create: function() {
 

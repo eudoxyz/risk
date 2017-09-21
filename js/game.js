@@ -4,7 +4,7 @@ game.global = {
 
   tenkici: new Array(42).fill(0)
 
-}
+};
 
 game.state.add('boot', bootState);
 game.state.add('load', loadState);

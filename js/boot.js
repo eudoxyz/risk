@@ -1,4 +1,4 @@
-let bootState = {
+const bootState = {
 
   create: function() {
 
