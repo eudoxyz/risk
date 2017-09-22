@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "js/vendor/phaser-min.js"
+    "start": "/js/vendor/phaser-min.js"
   },
   "repository": {
     "type": "git",
