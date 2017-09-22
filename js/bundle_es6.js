@@ -215,7 +215,9 @@ const loadState = {
   preload: function() {
 
     game.load.audio('nightRain', ['assets/audio/airtone_-_nightRain.ogg']);
-    game.load.audio('tick', ['assets/audio/tick.mp3']);
+    game.load.audio('tick', ['assets/audio/tick.ogg']);
+    game.load.spritesheet('zvuk', 'assets/graphics/zvuk.png', 48, 48,2);
+    
     game.load.image('sound', 'assets/graphics/sound.png');
     game.load.image('mute', 'assets/graphics/mute.png');   
 
@@ -254,10 +256,15 @@ const playState = {
 
   create: function() {
 
-    game.add.audio('nightRain').play();
-    this.tickSound = game.add.audio('tick');
-    var s = game.add.sprite(80, 0, 'sound');
+    backgroundMusic = game.add.audio('nightRain');
+    backgroundMusic.play();
+    backgroundMusic.loop = true;
 
+    this.tickSound = game.add.audio('tick');
+
+    this.muteButton = game.add.button(20, 20, 'zvuk', this.toggleSound, this);
+    this.muteButton.frame = 1;
+    
     this.territoryLabel = game.add.text(
       game.world.width - 20,
       game.world.top + 20,
@@ -371,9 +378,14 @@ const playState = {
     cvorovi.setAll('input.useHandCursor', true);
 
   },
-
+  toggleSound: function() {
+    // Switch the Phaser sound variable from true to false, or false to true
+    // When 'game.sound.mute = true', Phaser will mute the game
+    game.sound.mute = ! game.sound.mute;
+    // Change the frame of the button
+    this.muteButton.frame = game.sound.mute ? 0 : 1;
+  },   
 };
-
 const game = new Phaser.Game(WIDTH, HEIGHT, Phaser.AUTO, 'root');
 
 game.global = {
