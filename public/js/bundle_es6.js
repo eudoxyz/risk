@@ -1,3 +1,5 @@
+const socket = io();
+
 const WIDTH = 960;
 const HEIGHT = 640;
 const VERTICE_DIAMETER = 32;
@@ -256,9 +258,9 @@ const playState = {
 
   create: function() {
 
-    backgroundMusic = game.add.audio('nightRain');
-    backgroundMusic.play();
-    backgroundMusic.loop = true;
+    this.backgroundMusic = game.add.audio('nightRain');
+    // this.backgroundMusic.play();
+    this.backgroundMusic.loop = true;
 
     this.tickSound = game.add.audio('tick');
 
@@ -270,8 +272,19 @@ const playState = {
     );
     this.territoryLabel.anchor.setTo(1, 0);
 
+    this.playerLabel = game.add.text(20, game.world.height - 20, 'Drugi igrač je odsutan',
+      { font: '16px Arial', fill: '#F3F3F3', boundsAlignH: 'right' }
+    );
+    this.playerLabel.anchor.setTo(0, 1);
+
     this.drawEdges();
     this.drawVertices();
+
+    socket.emit('playStarted');
+
+    socket.on('connectionEvent', function(isConnected) {
+      playState.setConnectionStatus(isConnected);
+    });
   },
 
   update: function() {
@@ -279,6 +292,7 @@ const playState = {
     //
 
   },
+
 
   // ================ //
   // HELPER FUNCTIONS //
@@ -375,6 +389,7 @@ const playState = {
     cvorovi.setAll('input.useHandCursor', true);
 
   },
+
   toggleSound: function() {
     // Switch the Phaser sound variable from true to false, or false to true
     // When 'game.sound.mute = true', Phaser will mute the game
@@ -382,6 +397,11 @@ const playState = {
     // Change the frame of the button
     this.muteButton.frame = game.sound.mute ? 0 : 1;
   },
+
+  setConnectionStatus: function(isConnected) {
+    if (isConnected) this.playerLabel.text = 'Drugi igrač je prisutan';
+    else this.playerLabel.text = 'Drugi igrač je odsutan';
+  }
 };
 
 const game = new Phaser.Game(WIDTH, HEIGHT, Phaser.AUTO, 'root');
