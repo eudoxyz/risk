@@ -195,3 +195,70 @@ const KOORDINATE = [
   /* 41 */ [768, 521]
 
 ]
+
+const kartice = [
+  // 1 - infantry
+  // 2 - cavalry
+  // 3 - artillery
+  
+  // North America
+  //
+  /* 00 Alaska */ 1,
+  /* 01 Alberta */ 2,
+  /* 02 Central America */ 1,
+  /* 03 Eastern United States */ 3,
+  /* 04 Greenland*/ 2,
+  /* 05 Northwest Territory */ 3,
+  /* 06 Ontario */ 2,
+  /* 07 Quebec*/ 3,
+  /* 08 Western United States */ 3,
+
+  // South America
+  //
+  /* 09 Argentina */ 1,
+  /* 10 Brazil */ 1,
+  /* 11 Peru */ 2,
+  /* 12 Venezuela */ 2,
+
+  // Europe
+  //
+  /* 13 Great Britain */ 1,
+  /* 14 Iceland */ 2,
+  /* 15 Northern Europe */ 2,
+  /* 16 Scandinavia */ 1,
+  /* 17 Southern Europe */ 1,
+  /* 18 Ukraine */ 1,
+  /* 19 Western Europe */ 1,
+
+  // Africa
+  //
+  /* 20 Congo */ 3,
+  /* 21 East Africa */ 1,
+  /* 22 Egypt */ 2,
+  /* 23 Madagascar */ 2,
+  /* 24 North Africa */ 1,
+  /* 25 South Africa */ 3,
+
+  // Asia
+  //
+  /* 26 Afghanistan */ 1,
+  /* 27 China */ 3,
+  /* 28 India */ 2,
+  /* 29 Irkutsk */ 3,
+  /* 30 Japan */ 2,
+  /* 31 Kamchatka */ 3,
+  /* 32 Middle East*/ 3,
+  /* 33 Mongolia */ 2,
+  /* 34 Siam */ 2,
+  /* 35 Siberia */ 1,
+  /* 36 Ural */ 1,
+  /* 37 Yakutsk */ 3,
+
+  // Australia
+  //
+  /* 38 Eastern Australia */ 2,
+  /* 39 Indonesia */ 1,
+  /* 40 New Guinea */ 2,
+  /* 41 Western Australia */ 3
+
+]
