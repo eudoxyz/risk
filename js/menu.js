@@ -5,7 +5,7 @@ const menuState = {
     const message = game.add.text(
       game.world.centerX,
       game.world.centerY,
-      'Klikni mišem za početak',
+      'Klikni mišem za test',
       { font: '48px Arial', fill: '#F3F3F3' }
     );
     message.anchor.setTo(.5, .5);
