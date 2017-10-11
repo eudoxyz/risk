@@ -1,0 +1,55 @@
+body {
+  color: white;
+  margin: 0;
+}
+
+#root {
+  position: relative;
+}
+
+form {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.name-input {
+  background-color: transparent;
+  border: 2px solid white;
+  color: white;
+  font-size: 16px;
+  padding: 12px;
+}
+
+.lobby-wrapper {
+  border: 2px solid white;
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 374px;
+  height: 256px;
+}
+
+li.myself {
+  color: yellow;
+  font-style: italic;
+}
+
+li.ready::after {
+  content: ' is ready!';
+}
+
+input[type=checkbox] {
+  cursor: pointer;
+  position: absolute;
+  bottom: 16px; right: 16px;
+  margin: 0;
+  width: 24px;
+  height: 24px;
+}
+
+label {
+  position: absolute;
+  bottom: 19px;
+  right: 52px;
+}

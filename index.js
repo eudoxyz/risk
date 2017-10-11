@@ -3,6 +3,7 @@ const app = express();
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
 
+app.use('/css', express.static('public/css'));
 app.use('/js', express.static('public/js'));
 app.use('/snd', express.static('public/snd'));
 app.use('/img', express.static('public/img'));
@@ -23,16 +24,23 @@ io.on('connect', function(socket) {
   socket.on('playerEntered', function(name) {
     server.igraci.push({
       'id': socket.id,
-      'name': name
+      'name': name,
+      'ready': false
     });
 
     socket.on('lobbyCreated', function() {
       io.emit('updateLobby', server.igraci);
     });
-  });
 
-  socket.on('disconnect', function() {
-    server.igraci.splice(server.igraci.indexOf(server.igraci.find(igrac => igrac.id === socket.id)), 1);
+    socket.on('ready', function(isReady) {
+      server.igraci.find(igrac => igrac.id === socket.id).ready = isReady;
+      io.emit('updateLobby', server.igraci);
+    });
+
+    socket.on('disconnect', function() {
+      server.igraci.splice(server.igraci.indexOf(server.igraci.find(igrac => igrac.id === socket.id)), 1);
+      io.emit('updateLobby', server.igraci);
+    });
   });
 
   /*
