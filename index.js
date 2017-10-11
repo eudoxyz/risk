@@ -34,6 +34,15 @@ io.on('connect', function(socket) {
 
     socket.on('ready', function(isReady) {
       server.igraci.find(igrac => igrac.id === socket.id).ready = isReady;
+      if (server.igraci.length > 1) {
+        const allReady = server.igraci.every(function(igrac) {
+          return igrac.ready === true;
+        });
+        if (allReady) {
+          io.emit('allReady');
+          return;
+        }
+      }
       io.emit('updateLobby', server.igraci);
     });
 

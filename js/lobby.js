@@ -22,6 +22,11 @@ const lobbyState = {
       document.querySelector('.lobby-wrapper').appendChild(list);
     });
 
+    socket.on('allReady', function() {
+      document.querySelector('.lobby-wrapper').remove();
+      game.state.start('play');
+    });
+
     socket.emit('lobbyCreated');
 
   },
