@@ -12,6 +12,7 @@ module.exports = function(grunt) {
           'js/boot.js',
           'js/load.js',
           'js/menu.js',
+          'js/lobby.js',
           'js/play.js',
           'js/game.js',
         ],

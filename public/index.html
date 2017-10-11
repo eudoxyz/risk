@@ -7,6 +7,43 @@
   <script type="text/javascript" src="js/vendor/phaser.min.js"></script>
   <script type="text/javascript" src="js/bundle_es6.js"></script>
   <!-- <script type="text/javascript" src="js/bundle.min.js"></script> -->
+  <style>
+
+    body {
+      color: white;
+    }
+
+    #root {
+      display: inline-block;
+      position: relative;
+    }
+
+    .name-input {
+      background-color: transparent;
+      border: 2px solid white;
+      color: white;
+      font-size: 16px;
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 12px;
+    }
+
+    .lobby-wrapper {
+      border: 2px solid white;
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 50%;
+      height: 90%;
+    }
+
+    li.highlight {
+      color: yellow;
+      font-style: italic;
+    }
+
+  </style>
 </head>
 <body>
   <div id="root"></div>

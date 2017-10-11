@@ -198,6 +198,73 @@ const KOORDINATE = [
 
 ]
 
+const kartice = [
+  // 1 - infantry
+  // 2 - cavalry
+  // 3 - artillery
+  
+  // North America
+  //
+  /* 00 Alaska */ 1,
+  /* 01 Alberta */ 2,
+  /* 02 Central America */ 1,
+  /* 03 Eastern United States */ 3,
+  /* 04 Greenland*/ 2,
+  /* 05 Northwest Territory */ 3,
+  /* 06 Ontario */ 2,
+  /* 07 Quebec*/ 3,
+  /* 08 Western United States */ 3,
+
+  // South America
+  //
+  /* 09 Argentina */ 1,
+  /* 10 Brazil */ 1,
+  /* 11 Peru */ 2,
+  /* 12 Venezuela */ 2,
+
+  // Europe
+  //
+  /* 13 Great Britain */ 1,
+  /* 14 Iceland */ 2,
+  /* 15 Northern Europe */ 2,
+  /* 16 Scandinavia */ 1,
+  /* 17 Southern Europe */ 1,
+  /* 18 Ukraine */ 1,
+  /* 19 Western Europe */ 1,
+
+  // Africa
+  //
+  /* 20 Congo */ 3,
+  /* 21 East Africa */ 1,
+  /* 22 Egypt */ 2,
+  /* 23 Madagascar */ 2,
+  /* 24 North Africa */ 1,
+  /* 25 South Africa */ 3,
+
+  // Asia
+  //
+  /* 26 Afghanistan */ 1,
+  /* 27 China */ 3,
+  /* 28 India */ 2,
+  /* 29 Irkutsk */ 3,
+  /* 30 Japan */ 2,
+  /* 31 Kamchatka */ 3,
+  /* 32 Middle East*/ 3,
+  /* 33 Mongolia */ 2,
+  /* 34 Siam */ 2,
+  /* 35 Siberia */ 1,
+  /* 36 Ural */ 1,
+  /* 37 Yakutsk */ 3,
+
+  // Australia
+  //
+  /* 38 Eastern Australia */ 2,
+  /* 39 Indonesia */ 1,
+  /* 40 New Guinea */ 2,
+  /* 41 Western Australia */ 3
+
+]
+
 const bootState = {
 
   create: function() {
@@ -237,18 +304,71 @@ const menuState = {
 
   create: function() {
 
+    /*
     const message = game.add.text(
       game.world.centerX,
       game.world.centerY,
-      'Klikni mišem za početak',
+      'Klikni mišem za test',
       { font: '48px Arial', fill: '#F3F3F3' }
     );
     message.anchor.setTo(.5, .5);
+    */
 
+    const form = document.createElement('form');
+    const nameInput = document.createElement('input');
+    nameInput.type = 'text';
+    nameInput.className = 'name-input';
+    nameInput.autofocus = true;
+    form.addEventListener('submit', function(event) {
+      event.preventDefault();
+      game.state.start('lobby');
+      socket.emit('playerEntered', document.querySelector('.name-input').value);
+      event.target.remove();
+    });
+    form.appendChild(nameInput);
+    document.getElementById('root').appendChild(form);
+
+    /*
     const click = game.input.mousePointer.leftButton;
     click.onDown.addOnce(function() {
       game.state.start('play');
     });
+    */
+
+  }
+
+}
+
+const lobbyState = {
+
+  create: function() {
+
+    const lobbyWrapper = document.createElement('div');
+    lobbyWrapper.className = 'lobby-wrapper';
+    const list = document.createElement('ul');
+    list.className = 'players-list';
+    lobbyWrapper.appendChild(list);
+    document.getElementById('root').appendChild(lobbyWrapper);
+
+    this.setClient();
+
+  },
+
+  setClient: function() {
+
+    socket.on('updateLobby', function(igraci) {
+      const list = document.querySelector('.players-list');
+      list.innerHTML = '';
+      igraci.forEach(function(igrac) {
+        const listItem = document.createElement('li');
+        listItem.innerHTML = igrac.name;
+        if (igrac.id === socket.id) listItem.className = 'highlight';
+        list.appendChild(listItem);
+      });
+      document.querySelector('.lobby-wrapper').appendChild(list);
+    });
+
+    socket.emit('lobbyCreated');
 
   }
 
@@ -257,12 +377,6 @@ const menuState = {
 const playState = {
 
   create: function() {
-
-    this.backgroundMusic = game.add.audio('nightRain');
-    // this.backgroundMusic.play();
-    this.backgroundMusic.loop = true;
-
-    this.tickSound = game.add.audio('tick');
 
     this.muteButton = game.add.button(20, 20, 'zvuk', this.toggleSound, this);
     this.muteButton.frame = 1;
@@ -279,12 +393,9 @@ const playState = {
 
     this.drawEdges();
     this.drawVertices();
+    this.setAudio();
+    this.setClient();
 
-    socket.emit('playStarted');
-
-    socket.on('connectionEvent', function(isConnected) {
-      playState.setConnectionStatus(isConnected);
-    });
   },
 
   update: function() {
@@ -390,6 +501,34 @@ const playState = {
 
   },
 
+
+  setAudio: function() {
+
+    this.backgroundMusic = game.add.audio('nightRain');
+    this.backgroundMusic.loop = true;
+    // this.backgroundMusic.play();
+
+    this.tickSound = game.add.audio('tick');
+
+  },
+
+
+  setClient: function() {
+
+    socket.emit('playStarted');
+    socket.on('connectionEvent', function(isConnected) {
+      this.setConnectionStatus(isConnected);
+    });
+
+  },
+
+
+  setConnectionStatus: function(isConnected) {
+    if (isConnected) this.playerLabel.text = 'Drugi igrač je prisutan';
+    else this.playerLabel.text = 'Drugi igrač je odsutan';
+  },
+
+
   toggleSound: function() {
     // Switch the Phaser sound variable from true to false, or false to true
     // When 'game.sound.mute = true', Phaser will mute the game
@@ -398,10 +537,6 @@ const playState = {
     this.muteButton.frame = game.sound.mute ? 0 : 1;
   },
 
-  setConnectionStatus: function(isConnected) {
-    if (isConnected) this.playerLabel.text = 'Drugi igrač je prisutan';
-    else this.playerLabel.text = 'Drugi igrač je odsutan';
-  }
 };
 
 const game = new Phaser.Game(WIDTH, HEIGHT, Phaser.AUTO, 'root');
@@ -415,6 +550,7 @@ game.global = {
 game.state.add('boot', bootState);
 game.state.add('load', loadState);
 game.state.add('menu', menuState);
+game.state.add('lobby', lobbyState);
 game.state.add('play', playState);
 
 game.state.start('boot');

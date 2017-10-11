@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
-const http = require('http').Server(app);
-const io = require('socket.io')(http);
+const server = require('http').Server(app);
+const io = require('socket.io')(server);
 
 app.use('/js', express.static('public/js'));
 app.use('/snd', express.static('public/snd'));
@@ -12,24 +12,42 @@ app.get('/', function(req, res) {
 });
 
 const port = process.env.PORT || 8080;
-http.listen(port, function() {
+server.listen(port, function() {
   console.log('listening on *:' + port);
 });
 
-const igraci = [];
+server.igraci = [];
 
 io.on('connect', function(socket) {
 
+  socket.on('playerEntered', function(name) {
+    server.igraci.push({
+      'id': socket.id,
+      'name': name
+    });
+
+    socket.on('lobbyCreated', function() {
+      io.emit('updateLobby', server.igraci);
+    });
+  });
+
+  socket.on('disconnect', function() {
+    server.igraci.splice(server.igraci.indexOf(server.igraci.find(igrac => igrac.id === socket.id)), 1);
+  });
+
+  /*
   socket.on('playStarted', function() {
-    igraci.push(socket.id);
-    if (igraci.length > 1) {
+    server.igraci.push(socket.id);
+    if (server.igraci.length > 1) {
       io.emit('connectionEvent', true);
     }
 
     socket.on('disconnect', function() {
-      igraci.splice(igraci.indexOf(socket.id), 1);
+      server.igraci.splice(server.igraci.indexOf(socket.id), 1);
       io.emit('connectionEvent', false);
     });
+
   });
+  */
 
 });
