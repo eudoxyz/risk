@@ -539,7 +539,8 @@ const playState = {
 
 };
 
-const game = new Phaser.Game(WIDTH, HEIGHT, Phaser.AUTO, 'root');
+// const game = new Phaser.Game(WIDTH, HEIGHT, Phaser.AUTO, 'root');
+const game = new Phaser.Game(window.innerWidth, window.innerHeight, Phaser.AUTO, 'root');
 
 game.global = {
 

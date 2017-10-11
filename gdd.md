@@ -6,3 +6,4 @@ Konstruisati neusmereni graf takav da su čvorovi teritorije, a grana između dv
 - [ ] Ubaciti kartice sa zadacima
 - [x] Ubaciti kartice sa teritorijama
 - [ ] Omogućiti da dva igrača mogu da podele teritorije naizmeničnim postavljanjem tenkića
+- [ ] Counter za tenkiće u rezervi
