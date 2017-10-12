@@ -9,19 +9,7 @@ const lobbyState = {
 
   setClient: function() {
 
-    socket.on('updateLobby', function(igraci) {
-      const list = document.querySelector('.players-list');
-      list.innerHTML = '';
-      igraci.forEach(function(igrac) {
-        const listItem = newElement('li');
-        listItem.innerHTML = igrac.name;
-        if (igrac.id === socket.id) listItem.className = 'myself';
-        if (igrac.ready === true) listItem.className += ' ready';
-        list.appendChild(listItem);
-      });
-    });
-
-    socket.on('allReady', function() {
+    Client.socket.on('allReady', function() {
       const countDownDiv = newElement('div', 'count-down');
       countDownDiv.innerHTML = 'Play starting in 3';
       document.querySelector('.lobby-wrapper').appendChild(countDownDiv);
@@ -37,7 +25,7 @@ const lobbyState = {
       }, 1000);
     });
 
-    socket.emit('lobbyCreated');
+    Client.socket.emit('lobbyCreated');
 
   },
 
@@ -48,8 +36,8 @@ const lobbyState = {
     const joinCheckbox = newElement('input');
     joinCheckbox.type = 'checkbox';
     joinCheckbox.addEventListener('click', function() {
-      if (this.checked) socket.emit('ready', true);
-      else socket.emit('ready', false);
+      if (this.checked) Client.socket.emit('ready', true);
+      else Client.socket.emit('ready', false);
     });
     const joinLabel = newElement('label');
     joinLabel.innerHTML = 'Ready?';

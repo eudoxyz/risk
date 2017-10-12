@@ -15,10 +15,17 @@ const playState = {
     );
     this.playerLabel.anchor.setTo(0, 1);
 
-    this.drawEdges();
-    this.drawVertices();
-    this.setAudio();
-    this.setClient();
+
+    Client.socket.emit('playStarted', null, function(data) {
+      this.drawEdges();
+      this.drawVertices(data);
+      this.setAudio();
+    }.bind(this));
+
+
+    Client.socket.on('connectionEvent', function(isConnected) {
+      this.setConnectionStatus(isConnected);
+    });
 
   },
 
@@ -34,6 +41,7 @@ const playState = {
   // ================ //
 
   drawEdge: function(src, dst, pair) {
+
     const grane = game.add.graphics();
     grane.lineStyle(2, 0xF3F3F3, 1);
 
@@ -55,10 +63,12 @@ const playState = {
       grane.lineTo(dst[0], dst[1]);
 
     }
+
   },
 
 
   drawEdges: function() {
+
     const drawn = [...Array(42).keys()].map(i => Array(42)); // 42 x 42 niz
     for (let i = 0; i < GRAF.length; i++) {
       for (let j = 0; j < GRAF[i].length; j++) {
@@ -68,17 +78,18 @@ const playState = {
         }
       }
     }
+
   },
 
 
-  drawVertices: function() {
+  drawVertices: function(data) {
+
     const cvorovi = game.add.group();
     cvorovi.inputEnableChildren = true;
 
     for (let i = 0; i < KOORDINATE.length; i++) {
 
       const cvor = game.add.graphics(KOORDINATE[i][0], KOORDINATE[i][1]);
-      cvor.lineStyle(4, 0xF3F3F3, 1);
 
       let color;
       if (i < 9){
@@ -94,7 +105,9 @@ const playState = {
       } else {
         color = 0xcc00cc;
       }
-      cvor.beginFill(color, 1);
+      cvor.lineStyle(4, color, 1);
+
+      cvor.beginFill(data.boje[data.teritorije[i].igrac], 1);
 
       cvor.drawCircle(0, 0, VERTICE_DIAMETER);
       cvor.endFill();
@@ -133,16 +146,6 @@ const playState = {
     // this.backgroundMusic.play();
 
     this.tickSound = game.add.audio('tick');
-
-  },
-
-
-  setClient: function() {
-
-    socket.emit('playStarted');
-    socket.on('connectionEvent', function(isConnected) {
-      this.setConnectionStatus(isConnected);
-    });
 
   },
 

@@ -200,7 +200,7 @@ const kartice = [
   // 1 - infantry
   // 2 - cavalry
   // 3 - artillery
-  
+
   // North America
   //
   /* 00 Alaska */ 1,

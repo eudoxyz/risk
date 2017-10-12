@@ -1,4 +1,17 @@
-const socket = io();
+const Client = {};
+Client.socket = io();
+
+Client.socket.on('updateLobby', function(data) {
+  const list = document.querySelector('.players-list');
+  list.innerHTML = '';
+  data.igraci.forEach(function(igrac) {
+    const listItem = newElement('li');
+    listItem.innerHTML = igrac.name;
+    if (igrac.name === Client.name) listItem.className = 'myself';
+    if (igrac.ready === true) listItem.className += ' ready';
+    list.appendChild(listItem);
+  });
+});
 
 function newElement(tag, className = '') {
 
@@ -210,7 +223,7 @@ const kartice = [
   // 1 - infantry
   // 2 - cavalry
   // 3 - artillery
-  
+
   // North America
   //
   /* 00 Alaska */ 1,
@@ -312,16 +325,6 @@ const menuState = {
 
   create: function() {
 
-    /*
-    const message = game.add.text(
-      game.world.centerX,
-      game.world.centerY,
-      'Klikni mišem za test',
-      { font: '48px Arial', fill: '#F3F3F3' }
-    );
-    message.anchor.setTo(.5, .5);
-    */
-
     const form = document.createElement('form');
     const nameInput = document.createElement('input');
     nameInput.type = 'text';
@@ -329,19 +332,17 @@ const menuState = {
     nameInput.autofocus = true;
     form.addEventListener('submit', function(event) {
       event.preventDefault();
-      game.state.start('lobby');
-      socket.emit('playerEntered', document.querySelector('.name-input').value);
-      event.target.remove();
+      const name = document.querySelector('.name-input').value
+      Client.socket.emit('playerEntered', name, function(isOK) {
+        if (isOK) {
+          Client.name = name;
+          event.target.remove();
+          game.state.start('lobby');
+        } else alert('Name already exists.');
+      });
     });
     form.appendChild(nameInput);
     document.getElementById('root').appendChild(form);
-
-    /*
-    const click = game.input.mousePointer.leftButton;
-    click.onDown.addOnce(function() {
-      game.state.start('play');
-    });
-    */
 
   }
 
@@ -358,19 +359,7 @@ const lobbyState = {
 
   setClient: function() {
 
-    socket.on('updateLobby', function(igraci) {
-      const list = document.querySelector('.players-list');
-      list.innerHTML = '';
-      igraci.forEach(function(igrac) {
-        const listItem = newElement('li');
-        listItem.innerHTML = igrac.name;
-        if (igrac.id === socket.id) listItem.className = 'myself';
-        if (igrac.ready === true) listItem.className += ' ready';
-        list.appendChild(listItem);
-      });
-    });
-
-    socket.on('allReady', function() {
+    Client.socket.on('allReady', function() {
       const countDownDiv = newElement('div', 'count-down');
       countDownDiv.innerHTML = 'Play starting in 3';
       document.querySelector('.lobby-wrapper').appendChild(countDownDiv);
@@ -386,7 +375,7 @@ const lobbyState = {
       }, 1000);
     });
 
-    socket.emit('lobbyCreated');
+    Client.socket.emit('lobbyCreated');
 
   },
 
@@ -397,8 +386,8 @@ const lobbyState = {
     const joinCheckbox = newElement('input');
     joinCheckbox.type = 'checkbox';
     joinCheckbox.addEventListener('click', function() {
-      if (this.checked) socket.emit('ready', true);
-      else socket.emit('ready', false);
+      if (this.checked) Client.socket.emit('ready', true);
+      else Client.socket.emit('ready', false);
     });
     const joinLabel = newElement('label');
     joinLabel.innerHTML = 'Ready?';
@@ -429,10 +418,17 @@ const playState = {
     );
     this.playerLabel.anchor.setTo(0, 1);
 
-    this.drawEdges();
-    this.drawVertices();
-    this.setAudio();
-    this.setClient();
+
+    Client.socket.emit('playStarted', null, function(data) {
+      this.drawEdges();
+      this.drawVertices(data);
+      this.setAudio();
+    }.bind(this));
+
+
+    Client.socket.on('connectionEvent', function(isConnected) {
+      this.setConnectionStatus(isConnected);
+    });
 
   },
 
@@ -448,6 +444,7 @@ const playState = {
   // ================ //
 
   drawEdge: function(src, dst, pair) {
+
     const grane = game.add.graphics();
     grane.lineStyle(2, 0xF3F3F3, 1);
 
@@ -469,10 +466,12 @@ const playState = {
       grane.lineTo(dst[0], dst[1]);
 
     }
+
   },
 
 
   drawEdges: function() {
+
     const drawn = [...Array(42).keys()].map(i => Array(42)); // 42 x 42 niz
     for (let i = 0; i < GRAF.length; i++) {
       for (let j = 0; j < GRAF[i].length; j++) {
@@ -482,17 +481,18 @@ const playState = {
         }
       }
     }
+
   },
 
 
-  drawVertices: function() {
+  drawVertices: function(data) {
+
     const cvorovi = game.add.group();
     cvorovi.inputEnableChildren = true;
 
     for (let i = 0; i < KOORDINATE.length; i++) {
 
       const cvor = game.add.graphics(KOORDINATE[i][0], KOORDINATE[i][1]);
-      cvor.lineStyle(4, 0xF3F3F3, 1);
 
       let color;
       if (i < 9){
@@ -508,7 +508,9 @@ const playState = {
       } else {
         color = 0xcc00cc;
       }
-      cvor.beginFill(color, 1);
+      cvor.lineStyle(4, color, 1);
+
+      cvor.beginFill(data.boje[data.teritorije[i].igrac], 1);
 
       cvor.drawCircle(0, 0, VERTICE_DIAMETER);
       cvor.endFill();
@@ -547,16 +549,6 @@ const playState = {
     // this.backgroundMusic.play();
 
     this.tickSound = game.add.audio('tick');
-
-  },
-
-
-  setClient: function() {
-
-    socket.emit('playStarted');
-    socket.on('connectionEvent', function(isConnected) {
-      this.setConnectionStatus(isConnected);
-    });
 
   },
 
