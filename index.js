@@ -38,10 +38,7 @@ io.on('connect', function(socket) {
         const allReady = server.igraci.every(function(igrac) {
           return igrac.ready === true;
         });
-        if (allReady) {
-          io.emit('allReady');
-          return;
-        }
+        if (allReady) io.emit('allReady');
       }
       io.emit('updateLobby', server.igraci);
     });
