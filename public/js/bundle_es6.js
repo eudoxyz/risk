@@ -1,5 +1,13 @@
 const socket = io();
 
+function newElement(tag, className = '') {
+
+  const element = document.createElement(tag);
+  element.className = className;
+  return element;
+
+}
+
 const WIDTH = 960;
 const HEIGHT = 640;
 const VERTICE_DIAMETER = 32;
@@ -354,20 +362,18 @@ const lobbyState = {
       const list = document.querySelector('.players-list');
       list.innerHTML = '';
       igraci.forEach(function(igrac) {
-        const listItem = document.createElement('li');
+        const listItem = newElement('li');
         listItem.innerHTML = igrac.name;
         if (igrac.id === socket.id) listItem.className = 'myself';
         if (igrac.ready === true) listItem.className += ' ready';
         list.appendChild(listItem);
       });
-      document.querySelector('.lobby-wrapper').appendChild(list);
     });
 
     socket.on('allReady', function() {
-      const countDownDiv = document.createElement('div');
-      countDownDiv.className = 'count-down';
-      document.querySelector('.lobby-wrapper').appendChild(countDownDiv);
+      const countDownDiv = newElement('div', 'count-down');
       countDownDiv.innerHTML = 'Play starting in 3';
+      document.querySelector('.lobby-wrapper').appendChild(countDownDiv);
       document.querySelector('input[type=checkbox]').disabled = true;
       let counter = 3;
       const countDownFn = setInterval(function() {
@@ -386,20 +392,15 @@ const lobbyState = {
 
   populateDOM: function() {
 
-    const lobbyWrapper = document.createElement('div');
-    lobbyWrapper.className = 'lobby-wrapper';
-
-    const list = document.createElement('ul');
-    list.className = 'players-list';
-
-    const joinCheckbox = document.createElement('input');
+    const lobbyWrapper = newElement('div', 'lobby-wrapper');
+    const list = newElement('ul', 'players-list');
+    const joinCheckbox = newElement('input');
     joinCheckbox.type = 'checkbox';
     joinCheckbox.addEventListener('click', function() {
       if (this.checked) socket.emit('ready', true);
       else socket.emit('ready', false);
     });
-
-    const joinLabel = document.createElement('label');
+    const joinLabel = newElement('label');
     joinLabel.innerHTML = 'Ready?';
 
     lobbyWrapper.appendChild(list);

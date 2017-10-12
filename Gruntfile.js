@@ -8,6 +8,7 @@ module.exports = function(grunt) {
       dist: {
         src: [
           'js/client.js',
+          'js/helpers.js',
           'js/data.js',
           'js/boot.js',
           'js/load.js',
