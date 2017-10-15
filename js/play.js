@@ -18,8 +18,14 @@ const playState = {
 
     Client.socket.emit('playStarted', null, function(data) {
       this.drawEdges();
-      this.drawVertices(data);
+      this.drawVertices.call(this, data);
       this.setAudio();
+    }.bind(this));
+
+
+    Client.socket.on('updateTroops', function(data) {
+      const vertice = this.vertices.children[data.num];
+      vertice.label.text = data.troops;
     }.bind(this));
 
 
@@ -48,7 +54,7 @@ const playState = {
     // grana od aljaske do kamcatke
     if (pair[0] === 0 && pair[1] === 31) {
 
-      const CURVATURE = 650;
+      const CURVATURE = 650 * MULTIPLIER;
       const MIDDLE_X = (src[0] + dst[0]) / 2;
       const MIDDLE_Y = src[1]; // y-koordinata im je ista
       const DISTANCE = dst[0] - src[0];
@@ -84,8 +90,8 @@ const playState = {
 
   drawVertices: function(data) {
 
-    const vertices = game.add.group();
-    vertices.inputEnableChildren = true;
+    this.vertices = game.add.group();
+    this.vertices.inputEnableChildren = true;
 
     for (let i = 0; i < KOORDINATE.length; i++) {
 
@@ -115,19 +121,19 @@ const playState = {
         drawTriangle(vertice);
 
       vertice.endFill();
-      vertice.data.tenkici = game.add.text(KOORDINATE[i][0], KOORDINATE[i][1], '0', { font: '16px Arial', fill: '#ffffff' });
-      vertice.data.tenkici.anchor.setTo(0.5, 0.4);
+      vertice.label = game.add.text(KOORDINATE[i][0], KOORDINATE[i][1], '', { font: '16px Arial', fill: '#ffffff' });
+      vertice.label.anchor.setTo(0.5, 0.4);
 
-      vertice.events.onInputDown.add(function(vertice, pointer) {
-        if (pointer.leftButton.isDown) {
-          vertice.data.tenkici.text = String(++game.global.tenkici[verticeovi.getChildIndex(vertice)]);
+      vertice.events.onInputDown.add(function clickVerticeHandler(vertice, click) {
+        if (click.leftButton.isDown) {
           this.tickSound.play();
+          Client.socket.emit('addTroop', i);
         }
       }, this);
 
       vertice.events.onInputOver.add(function(vertice) {
         game.add.tween(vertice.scale).to({ x: 1.5, y: 1.5 }, 100).start();
-        this.territoryLabel.text = TERITORIJE[vertices.getChildIndex(vertice)];
+        this.territoryLabel.text = TERITORIJE[this.vertices.getChildIndex(vertice)];
       }, this);
 
       vertice.events.onInputOut.add(function(vertice) {
@@ -135,10 +141,10 @@ const playState = {
         this.territoryLabel.text = '';
       }, this);
 
-      vertices.add(vertice);
+      this.vertices.add(vertice);
     }
 
-    vertices.setAll('input.useHandCursor', true);
+    this.vertices.setAll('input.useHandCursor', true);
 
   },
 
@@ -167,5 +173,6 @@ const playState = {
     // Change the frame of the button
     this.muteButton.frame = game.sound.mute ? 0 : 1;
   },
+
 
 };

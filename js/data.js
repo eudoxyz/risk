@@ -1,6 +1,8 @@
 const WIDTH = 960;
 const HEIGHT = 640;
-const VERTICE_DIAMETER = 32;
+const MULTIPLIER = Math.min(window.innerWidth / WIDTH, window.innerHeight / HEIGHT);
+const VERTICE_DIAMETER = 32 * MULTIPLIER;
+
 
 const TERITORIJE = [
 
@@ -144,7 +146,7 @@ const GRAF = [
 ];
 
 
-const KOORDINATE = [
+const KOORDINATE_ORIGINAL = [
 
   /* 00 */ [55, 155],
   /* 01 */ [136, 194],
@@ -195,6 +197,8 @@ const KOORDINATE = [
   /* 41 */ [768, 521]
 
 ]
+
+const KOORDINATE = KOORDINATE_ORIGINAL.map(koordinata => [koordinata[0] * MULTIPLIER, koordinata[1] * MULTIPLIER]);
 
 const kartice = [
   // 1 - infantry

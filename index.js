@@ -68,6 +68,11 @@ io.on('connect', function(socket) {
 
     socket.on('playStarted', function(__, cb) {
       cb(Server.territories);
+
+       socket.on('addTroop', function(num) {
+         const troops = ++Server.territories[num].troops;
+         io.emit('updateTroops', { troops: troops, num: num })
+       })
     });
 
     socket.on('disconnect', function() {
