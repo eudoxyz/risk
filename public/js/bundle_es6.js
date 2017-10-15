@@ -1,24 +1,15 @@
 const Client = {};
 Client.socket = io();
 
-Client.socket.on('updateLobby', function(data) {
-  const list = document.querySelector('.players-list');
-  list.innerHTML = '';
-  data.igraci.forEach(function(igrac) {
-    const listItem = newElement('li');
-    listItem.innerHTML = igrac.name;
-    if (igrac.name === Client.name) listItem.className = 'myself';
-    if (igrac.ready === true) listItem.className += ' ready';
-    list.appendChild(listItem);
-  });
-});
-
-function newElement(tag, className = '') {
-
+function newElement(tag, attributes = {}) {
   const element = document.createElement(tag);
-  element.className = className;
+  for (let key in attributes)
+    element[key] = attributes[key];
   return element;
+}
 
+function degToRad(deg) {
+  return deg * (Math.PI / 180);
 }
 
 const WIDTH = 960;
@@ -325,11 +316,12 @@ const menuState = {
 
   create: function() {
 
-    const form = document.createElement('form');
-    const nameInput = document.createElement('input');
-    nameInput.type = 'text';
-    nameInput.className = 'name-input';
-    nameInput.autofocus = true;
+    const form = newElement('form');
+    const nameInput = newElement('input', {
+      className: 'name-input',
+      type: 'text',
+      autofocus: true
+    });
     form.addEventListener('submit', function(event) {
       event.preventDefault();
       const name = document.querySelector('.name-input').value
@@ -352,16 +344,26 @@ const lobbyState = {
 
   create: function() {
 
-    this.setClient();
     this.populateDOM();
 
-  },
-
-  setClient: function() {
+    Client.socket.on('updateLobby', function(data) {
+      const list = document.querySelector('.player-list');
+      list.innerHTML = '';
+      data.players.forEach(function(player) {
+        const listItem = newElement('li', {
+          innerHTML: player.name
+        });
+        if (player.name === Client.name) listItem.className = 'myself';
+        if (player.ready === true) listItem.className += ' ready';
+        list.appendChild(listItem);
+      });
+    });
 
     Client.socket.on('allReady', function() {
-      const countDownDiv = newElement('div', 'count-down');
-      countDownDiv.innerHTML = 'Play starting in 3';
+      const countDownDiv = newElement('div', {
+        className: 'countdown',
+        innerHTML: 'Play starting in 3'
+      });
       document.querySelector('.lobby-wrapper').appendChild(countDownDiv);
       document.querySelector('input[type=checkbox]').disabled = true;
       let counter = 3;
@@ -381,16 +383,23 @@ const lobbyState = {
 
   populateDOM: function() {
 
-    const lobbyWrapper = newElement('div', 'lobby-wrapper');
-    const list = newElement('ul', 'players-list');
-    const joinCheckbox = newElement('input');
-    joinCheckbox.type = 'checkbox';
+    const lobbyWrapper = newElement('div', {
+      className: 'lobby-wrapper'
+    });
+    const list = newElement('ul', {
+      className: 'player-list'
+    });
+    const joinCheckbox = newElement('input', {
+      type: 'checkbox',
+      autofocus: true
+    });
     joinCheckbox.addEventListener('click', function() {
       if (this.checked) Client.socket.emit('ready', true);
       else Client.socket.emit('ready', false);
     });
-    const joinLabel = newElement('label');
-    joinLabel.innerHTML = 'Ready?';
+    const joinLabel = newElement('label', {
+      innerHTML: 'Ready?'
+    });
 
     lobbyWrapper.appendChild(list);
     lobbyWrapper.appendChild(joinLabel);
@@ -494,6 +503,7 @@ const playState = {
 
       const cvor = game.add.graphics(KOORDINATE[i][0], KOORDINATE[i][1]);
 
+      /*
       let color;
       if (i < 9){
         color = 0xFF0000;
@@ -508,11 +518,32 @@ const playState = {
       } else {
         color = 0xcc00cc;
       }
-      cvor.lineStyle(4, color, 1);
+      */
+      cvor.lineStyle(4, 0xffffff, 1);
 
-      cvor.beginFill(data.boje[data.teritorije[i].igrac], 1);
+      cvor.beginFill(data[i].color, 1);
 
-      cvor.drawCircle(0, 0, VERTICE_DIAMETER);
+      if (i < 9) cvor.drawCircle(0, 0, VERTICE_DIAMETER);
+      else if (i < 13) {
+        const side = VERTICE_DIAMETER + 10;
+        cvor.lineTo(side, 0);
+        cvor.lineTo(side / 2, -Math.sin(Math.PI / 3) * side);
+        cvor.pivot.x = side / 2;
+        cvor.pivot.y = -1/3 * side;
+      } else if (i < 20) {
+        cvor.drawRect(0, 0, VERTICE_DIAMETER, VERTICE_DIAMETER);
+        cvor.pivot.x = VERTICE_DIAMETER / 2;
+        cvor.pivot.y = VERTICE_DIAMETER / 2;
+      } else if (i < 26) {
+        const side = VERTICE_DIAMETER - 6;
+        cvor.lineTo(side, 0);
+        cvor.lineTo(side + Math.cos(degToRad(72)) * side, -Math.sin(degToRad(72)) * side);
+        cvor.lineTo(side / 2, -(Math.sqrt(5 + 2 * Math.sqrt(5)) / 2) * side);
+        cvor.lineTo(-Math.cos(degToRad(72)) * side, -Math.sin(degToRad(72)) * side);
+        cvor.pivot.x = side / 2;
+        cvor.pivot.y = -(Math.sqrt(5 + 2 * Math.sqrt(5)) / 2) * side / 2 + 2;
+      }
+
       cvor.endFill();
       cvor.data.tenkici = game.add.text(KOORDINATE[i][0], KOORDINATE[i][1], '0', { font: '16px Arial', fill: '#ffffff' });
       cvor.data.tenkici.anchor.setTo(0.5, 0.4);
@@ -571,12 +602,6 @@ const playState = {
 
 // const game = new Phaser.Game(WIDTH, HEIGHT, Phaser.AUTO, 'root');
 const game = new Phaser.Game(window.innerWidth, window.innerHeight, Phaser.AUTO, 'root');
-
-game.global = {
-
-  tenkici: new Array(42).fill(0)
-
-};
 
 game.state.add('boot', bootState);
 game.state.add('load', loadState);

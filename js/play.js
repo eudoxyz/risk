@@ -91,6 +91,7 @@ const playState = {
 
       const cvor = game.add.graphics(KOORDINATE[i][0], KOORDINATE[i][1]);
 
+      /*
       let color;
       if (i < 9){
         color = 0xFF0000;
@@ -105,11 +106,32 @@ const playState = {
       } else {
         color = 0xcc00cc;
       }
-      cvor.lineStyle(4, color, 1);
+      */
+      cvor.lineStyle(4, 0xffffff, 1);
 
-      cvor.beginFill(data.boje[data.teritorije[i].igrac], 1);
+      cvor.beginFill(data[i].color, 1);
 
-      cvor.drawCircle(0, 0, VERTICE_DIAMETER);
+      if (i < 9) cvor.drawCircle(0, 0, VERTICE_DIAMETER);
+      else if (i < 13) {
+        const side = VERTICE_DIAMETER + 10;
+        cvor.lineTo(side, 0);
+        cvor.lineTo(side / 2, -Math.sin(Math.PI / 3) * side);
+        cvor.pivot.x = side / 2;
+        cvor.pivot.y = -1/3 * side;
+      } else if (i < 20) {
+        cvor.drawRect(0, 0, VERTICE_DIAMETER, VERTICE_DIAMETER);
+        cvor.pivot.x = VERTICE_DIAMETER / 2;
+        cvor.pivot.y = VERTICE_DIAMETER / 2;
+      } else if (i < 26) {
+        const side = VERTICE_DIAMETER - 6;
+        cvor.lineTo(side, 0);
+        cvor.lineTo(side + Math.cos(degToRad(72)) * side, -Math.sin(degToRad(72)) * side);
+        cvor.lineTo(side / 2, -(Math.sqrt(5 + 2 * Math.sqrt(5)) / 2) * side);
+        cvor.lineTo(-Math.cos(degToRad(72)) * side, -Math.sin(degToRad(72)) * side);
+        cvor.pivot.x = side / 2;
+        cvor.pivot.y = -(Math.sqrt(5 + 2 * Math.sqrt(5)) / 2) * side / 2 + 2;
+      }
+
       cvor.endFill();
       cvor.data.tenkici = game.add.text(KOORDINATE[i][0], KOORDINATE[i][1], '0', { font: '16px Arial', fill: '#ffffff' });
       cvor.data.tenkici.anchor.setTo(0.5, 0.4);

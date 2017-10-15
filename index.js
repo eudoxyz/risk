@@ -20,67 +20,59 @@ Server.listen(port, function() {
 
 const colors = [0xa5280e, 0x3716dd];
 
-Server.igraci = [];
-Server.teritorije = [];
+function Player(id, name, color, isReady) {
+  this.id = id;
+  this.name = name;
+  this.color = color;
+  this.isReady = isReady;
+}
+
+function Territory(color, troops) {
+  this.color = color;
+  this.troops = troops;
+}
+
+Server.players = [];
+Server.territories = [];
 
 io.on('connect', function(socket) {
 
   socket.on('playerEntered', function(name, cb) {
-    if (Server.igraci.every(function(igrac) {
-      return igrac.name != name;
+    if (Server.players.every(function(player) {
+      return player.name != name;
     })) {
-      Server.igraci.push({
-        'id': socket.id,
-        'name': name,
-        'color': colors.pop(),
-        'ready': false
-      });
+      Server.players.push(new Player(socket.id, name, colors.pop(), false));
       cb(true);
     } else cb(false);
 
     socket.on('lobbyCreated', function() {
-      io.emit('updateLobby', dataForLobby(socket));
-    });
+      io.emit('updateLobby', dataForLobby());
 
-    socket.on('ready', function(isReady) {
-      Server.igraci.find(igrac => igrac.id === socket.id).ready = isReady;
-      if (Server.igraci.length > 1) {
-        const allReady = Server.igraci.every(function(igrac) {
-          return igrac.ready === true;
-        });
-        if (allReady) {
-          io.emit('allReady');
-          for (let i = 0; i < 42; i++) {
-            Server.teritorije.push({
-              'igrac': Server.igraci[i % Server.igraci.length].name,
-              'brojTenkica': 0
-            });
+      socket.on('ready', function(isReady) {
+        findPlayerByID(socket.id).ready = isReady;
+        if (Server.players.length > 1) {
+          const allReady = Server.players.every(function(player) {
+            return player.ready === true;
+          });
+          if (allReady) {
+            io.emit('allReady');
+            for (let i = 0; i < 42; i++) {
+              Server.territories.push(new Territory(Server.players[i % Server.players.length].color, 0))
+            }
+            Server.territories = _.shuffle(Server.territories);
           }
-          Server.teritorije = _.shuffle(Server.teritorije);
         }
-      }
-      io.emit('updateLobby', dataForLobby(socket));
+        io.emit('updateLobby', dataForLobby());
+      });
     });
 
     socket.on('playStarted', function(__, cb) {
-      const boje = {};
-      Server.igraci.forEach(function(igrac) {
-        boje[igrac.name] = igrac.color;
-      });
-      cb({ 'teritorije': Server.teritorije, 'boje': boje });
-
-      /*
-      socket.on('disconnect', function() {
-        Server.igraci.splice(Server.igraci.indexOf(socket.id), 1);
-        io.emit('connectionEvent', false);
-      });
-      */
-
+      cb(Server.territories);
     });
 
     socket.on('disconnect', function() {
-      Server.igraci.splice(Server.igraci.indexOf(Server.igraci.find(igrac => igrac.id === socket.id)), 1);
-      io.emit('updateLobby', Server.igraci);
+      Server.players.splice(Server.players.indexOf(findPlayerByID(socket.id)), 1);
+      io.emit('updateLobby', dataForLobby());
     });
   });
 
@@ -88,11 +80,11 @@ io.on('connect', function(socket) {
 
 
 function findPlayerByID(id) {
-  return Server.igraci.find(igrac => igrac.id === id);
+  return Server.players.find(igrac => igrac.id === id);
 }
 
-function dataForLobby(socket) {
+function dataForLobby() {
   return {
-    'igraci': Server.igraci.map(x => ({ 'name': x.name, 'ready': x.ready })),
+    'players': Server.players.map(x => ({ 'name': x.name, 'ready': x.ready })),
   }
 }

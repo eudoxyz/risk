@@ -2,11 +2,12 @@ const menuState = {
 
   create: function() {
 
-    const form = document.createElement('form');
-    const nameInput = document.createElement('input');
-    nameInput.type = 'text';
-    nameInput.className = 'name-input';
-    nameInput.autofocus = true;
+    const form = newElement('form');
+    const nameInput = newElement('input', {
+      className: 'name-input',
+      type: 'text',
+      autofocus: true
+    });
     form.addEventListener('submit', function(event) {
       event.preventDefault();
       const name = document.querySelector('.name-input').value
