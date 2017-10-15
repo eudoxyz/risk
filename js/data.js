@@ -173,9 +173,9 @@ const KOORDINATE_ORIGINAL = [
 
   /* 20 */ [465, 465],
   /* 21 */ [547, 431],
-  /* 22 */ [492, 354],
+  /* 22 */ [488, 359],
   /* 23 */ [586, 546],
-  /* 24 */ [412, 371],
+  /* 24 */ [408, 371],
   /* 25 */ [476, 543],
 
   /* 26 */ [620, 277],
@@ -197,7 +197,6 @@ const KOORDINATE_ORIGINAL = [
   /* 41 */ [768, 521]
 
 ]
-
 const KOORDINATE = KOORDINATE_ORIGINAL.map(koordinata => [koordinata[0] * MULTIPLIER, koordinata[1] * MULTIPLIER]);
 
 const kartice = [

@@ -96,29 +96,24 @@ const playState = {
     for (let i = 0; i < KOORDINATE.length; i++) {
 
       const vertice = game.add.graphics(KOORDINATE[i][0], KOORDINATE[i][1]);
+      vertice.name = data[i].name;
 
       vertice.lineStyle(4, 0xffffff, 1);
       vertice.beginFill(data[i].color, 1);
 
       if (i < 9) vertice.drawCircle(0, 0, VERTICE_DIAMETER);
       else if (i < 13)
-        drawTriangle(vertice);
+        drawPentagon(vertice);
       else if (i < 20) {
         vertice.drawRect(0, 0, VERTICE_DIAMETER, VERTICE_DIAMETER);
         vertice.pivot.x = VERTICE_DIAMETER / 2;
         vertice.pivot.y = VERTICE_DIAMETER / 2;
       } else if (i < 26) {
-        const side = VERTICE_DIAMETER - 6;
-        vertice.lineTo(side, 0);
-        vertice.lineTo(side + Math.cos(degToRad(72)) * side, -Math.sin(degToRad(72)) * side);
-        vertice.lineTo(side / 2, -(Math.sqrt(5 + 2 * Math.sqrt(5)) / 2) * side);
-        vertice.lineTo(-Math.cos(degToRad(72)) * side, -Math.sin(degToRad(72)) * side);
-        vertice.pivot.x = side / 2;
-        vertice.pivot.y = -(Math.sqrt(5 + 2 * Math.sqrt(5)) / 2) * side / 2 + 2;
+        drawTriangle(vertice);
       } else if (i < 38)
         vertice.drawCircle(0, 0, VERTICE_DIAMETER);
       else
-        drawTriangle(vertice);
+        drawPentagon(vertice);
 
       vertice.endFill();
       vertice.label = game.add.text(KOORDINATE[i][0], KOORDINATE[i][1], '', { font: '16px Arial', fill: '#ffffff' });
@@ -126,19 +121,26 @@ const playState = {
 
       vertice.events.onInputDown.add(function clickVerticeHandler(vertice, click) {
         if (click.leftButton.isDown) {
-          this.tickSound.play();
-          Client.socket.emit('addTroop', i);
+          // play sound
+          Client.socket.emit('addTroop', i, true);
+        }
+        if (click.rightButton.isDown) {
+          // play sound
+          Client.socket.emit('addTroop', i, false);
         }
       }, this);
 
       vertice.events.onInputOver.add(function(vertice) {
+        if (vertice.name !== Client.name) return;
+
         game.add.tween(vertice.scale).to({ x: 1.5, y: 1.5 }, 100).start();
         this.territoryLabel.text = TERITORIJE[this.vertices.getChildIndex(vertice)];
-      }, this);
 
-      vertice.events.onInputOut.add(function(vertice) {
-        game.add.tween(vertice.scale).to({ x: 1, y: 1 }, 200).start();
-        this.territoryLabel.text = '';
+        vertice.events.onInputOut.add(function(vertice) {
+          game.add.tween(vertice.scale).to({ x: 1, y: 1 }, 200).start();
+          this.territoryLabel.text = '';
+        }, this);
+
       }, this);
 
       this.vertices.add(vertice);
@@ -154,8 +156,6 @@ const playState = {
     this.backgroundMusic = game.add.audio('nightRain');
     this.backgroundMusic.loop = true;
     // this.backgroundMusic.play();
-
-    this.tickSound = game.add.audio('tick');
 
   },
 

@@ -27,8 +27,8 @@ function Player(id, name, color, isReady) {
   this.isReady = isReady;
 }
 
-function Territory(color, troops) {
-  this.color = color;
+function Territory(owner, troops) {
+  this.owner = owner;
   this.troops = troops;
 }
 
@@ -57,7 +57,7 @@ io.on('connect', function(socket) {
           if (allReady) {
             io.emit('allReady');
             for (let i = 0; i < 42; i++) {
-              Server.territories.push(new Territory(Server.players[i % Server.players.length].color, 0))
+              Server.territories.push(new Territory(Server.players[i % Server.players.length], 0))
             }
             Server.territories = _.shuffle(Server.territories);
           }
@@ -67,12 +67,23 @@ io.on('connect', function(socket) {
     });
 
     socket.on('playStarted', function(__, cb) {
-      cb(Server.territories);
+      cb(Server.territories.map(function(territory) {
+        return {
+          name: territory.owner.name,
+          color: territory.owner.color,
+          troops: territory.troops
+        };
+      }));
 
-       socket.on('addTroop', function(num) {
-         const troops = ++Server.territories[num].troops;
-         io.emit('updateTroops', { troops: troops, num: num })
-       })
+      socket.on('addTroop', function(num, isAdded) {
+        if (Server.territories[num].owner.id !== socket.id) return;
+
+        let troops;
+        if (isAdded) troops = ++Server.territories[num].troops;
+        else if (Server.territories[num].troops > 0)
+          troops = --Server.territories[num].troops;
+        io.emit('updateTroops', { troops: troops ? troops : '', num: num })
+      });
     });
 
     socket.on('disconnect', function() {
