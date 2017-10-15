@@ -12,6 +12,14 @@ function degToRad(deg) {
   return deg * (Math.PI / 180);
 }
 
+function drawTriangle(graphicsObj) {
+  const side = VERTICE_DIAMETER + 10;
+  graphicsObj.lineTo(side, 0);
+  graphicsObj.lineTo(side / 2, -Math.sin(Math.PI / 3) * side);
+  graphicsObj.pivot.x = side / 2;
+  graphicsObj.pivot.y = -1/3 * side;
+}
+
 const WIDTH = 960;
 const HEIGHT = 640;
 const VERTICE_DIAMETER = 32;
@@ -496,79 +504,61 @@ const playState = {
 
   drawVertices: function(data) {
 
-    const cvorovi = game.add.group();
-    cvorovi.inputEnableChildren = true;
+    const vertices = game.add.group();
+    vertices.inputEnableChildren = true;
 
     for (let i = 0; i < KOORDINATE.length; i++) {
 
-      const cvor = game.add.graphics(KOORDINATE[i][0], KOORDINATE[i][1]);
+      const vertice = game.add.graphics(KOORDINATE[i][0], KOORDINATE[i][1]);
 
-      /*
-      let color;
-      if (i < 9){
-        color = 0xFF0000;
-      } else if (i < 13) {
-        color = 0x006600;
-      } else if (i < 20) {
-        color = 0x0033cc;
-      } else if (i < 26) {
-        color = 0x000000;
-      } else if (i < 38) {
-        color = 0xffcc00;
-      } else {
-        color = 0xcc00cc;
-      }
-      */
-      cvor.lineStyle(4, 0xffffff, 1);
+      vertice.lineStyle(4, 0xffffff, 1);
+      vertice.beginFill(data[i].color, 1);
 
-      cvor.beginFill(data[i].color, 1);
-
-      if (i < 9) cvor.drawCircle(0, 0, VERTICE_DIAMETER);
-      else if (i < 13) {
-        const side = VERTICE_DIAMETER + 10;
-        cvor.lineTo(side, 0);
-        cvor.lineTo(side / 2, -Math.sin(Math.PI / 3) * side);
-        cvor.pivot.x = side / 2;
-        cvor.pivot.y = -1/3 * side;
-      } else if (i < 20) {
-        cvor.drawRect(0, 0, VERTICE_DIAMETER, VERTICE_DIAMETER);
-        cvor.pivot.x = VERTICE_DIAMETER / 2;
-        cvor.pivot.y = VERTICE_DIAMETER / 2;
+      if (i < 9) vertice.drawCircle(0, 0, VERTICE_DIAMETER);
+      else if (i < 13)
+        drawTriangle(vertice);
+      else if (i < 20) {
+        vertice.drawRect(0, 0, VERTICE_DIAMETER, VERTICE_DIAMETER);
+        vertice.pivot.x = VERTICE_DIAMETER / 2;
+        vertice.pivot.y = VERTICE_DIAMETER / 2;
       } else if (i < 26) {
         const side = VERTICE_DIAMETER - 6;
-        cvor.lineTo(side, 0);
-        cvor.lineTo(side + Math.cos(degToRad(72)) * side, -Math.sin(degToRad(72)) * side);
-        cvor.lineTo(side / 2, -(Math.sqrt(5 + 2 * Math.sqrt(5)) / 2) * side);
-        cvor.lineTo(-Math.cos(degToRad(72)) * side, -Math.sin(degToRad(72)) * side);
-        cvor.pivot.x = side / 2;
-        cvor.pivot.y = -(Math.sqrt(5 + 2 * Math.sqrt(5)) / 2) * side / 2 + 2;
-      }
+        vertice.lineTo(side, 0);
+        vertice.lineTo(side + Math.cos(degToRad(72)) * side, -Math.sin(degToRad(72)) * side);
+        vertice.lineTo(side / 2, -(Math.sqrt(5 + 2 * Math.sqrt(5)) / 2) * side);
+        vertice.lineTo(-Math.cos(degToRad(72)) * side, -Math.sin(degToRad(72)) * side);
+        vertice.pivot.x = side / 2;
+        vertice.pivot.y = -(Math.sqrt(5 + 2 * Math.sqrt(5)) / 2) * side / 2 + 2;
+      } else if (i < 38)
+        vertice.drawCircle(0, 0, VERTICE_DIAMETER);
+      else
+        drawTriangle(vertice);
 
-      cvor.endFill();
-      cvor.data.tenkici = game.add.text(KOORDINATE[i][0], KOORDINATE[i][1], '0', { font: '16px Arial', fill: '#ffffff' });
-      cvor.data.tenkici.anchor.setTo(0.5, 0.4);
+      vertice.endFill();
+      vertice.data.tenkici = game.add.text(KOORDINATE[i][0], KOORDINATE[i][1], '0', { font: '16px Arial', fill: '#ffffff' });
+      vertice.data.tenkici.anchor.setTo(0.5, 0.4);
 
-      cvor.events.onInputDown.add(function(cvor, pointer) {
+      vertice.events.onInputDown.add(function(vertice, pointer) {
         if (pointer.leftButton.isDown) {
-          cvor.data.tenkici.text = String(++game.global.tenkici[cvorovi.getChildIndex(cvor)]);
+          vertice.data.tenkici.text = String(++game.global.tenkici[verticeovi.getChildIndex(vertice)]);
           this.tickSound.play();
         }
       }, this);
 
-      cvor.events.onInputOver.add(function(cvor) {
-        game.add.tween(cvor.scale).to({ x: 1.5, y: 1.5 }, 100).start();
-        this.territoryLabel.text = TERITORIJE[cvorovi.getChildIndex(cvor)];
+      vertice.events.onInputOver.add(function(vertice) {
+        game.add.tween(vertice.scale).to({ x: 1.5, y: 1.5 }, 100).start();
+        this.territoryLabel.text = TERITORIJE[vertices.getChildIndex(vertice)];
       }, this);
 
-      cvor.events.onInputOut.add(function(cvor) {
-        game.add.tween(cvor.scale).to({ x: 1, y: 1 }, 200).start();
+      vertice.events.onInputOut.add(function(vertice) {
+        game.add.tween(vertice.scale).to({ x: 1, y: 1 }, 200).start();
         this.territoryLabel.text = '';
       }, this);
 
-      cvorovi.add(cvor);
+      vertices.add(vertice);
     }
 
-    cvorovi.setAll('input.useHandCursor', true);
+    vertices.setAll('input.useHandCursor', true);
 
   },
 
