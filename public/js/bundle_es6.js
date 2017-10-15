@@ -1,6 +1,12 @@
 const Client = {};
 Client.socket = io();
 
+Client.socket.on('connect', function() {
+  if (!localStorage.getItem('persistentID'))
+    localStorage.setItem('persistentID', Client.socket.id);
+  Client.socket.emit('tokenReady', localStorage.getItem('persistentID'));
+});
+
 function newElement(tag, attributes = {}) {
   const element = document.createElement(tag);
   for (let key in attributes)
@@ -460,7 +466,6 @@ const playState = {
     this.setAudio();
 
     Client.socket.emit('playStarted', null, function(data) {
-      this.data = data;
       this.drawMap(data);
     }.bind(this));
 
@@ -553,12 +558,13 @@ const playState = {
   drawVertices: function(data) {
 
     this.vertices = game.add.group();
-    this.vertices.inputEnableChildren = true;
 
     for (let i = 0; i < KOORDINATE.length; i++) {
 
       const vertice = game.add.graphics(KOORDINATE[i][0], KOORDINATE[i][1]);
       vertice.name = data[i].name;
+      vertice.inputEnabled = true;
+      if (vertice.name === Client.name) vertice.input.useHandCursor = true;
 
       vertice.lineStyle(4, 0xffffff, 1);
       vertice.beginFill(data[i].color, 1);
@@ -607,8 +613,6 @@ const playState = {
 
       this.vertices.add(vertice);
     }
-
-    this.vertices.setAll('input.useHandCursor', true);
 
   },
 

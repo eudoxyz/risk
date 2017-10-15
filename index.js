@@ -18,10 +18,11 @@ Server.listen(port, function() {
   console.log('listening on *:' + port);
 });
 
-const colors = [0xa5280e, 0x3716dd];
+const colors = [0x44cd7e, 0xa5280e, 0x3716dd];
 
-function Player(id, name, color, isReady) {
+function Player(id, token, name, color, isReady) {
   this.id = id;
+  this.token = token;
   this.name = name;
   this.color = color;
   this.isReady = isReady;
@@ -37,11 +38,17 @@ Server.territories = [];
 
 io.on('connect', function(socket) {
 
+  let token;
+  socket.on('tokenReady', function(_token) {
+    token = _token;
+  });
+
   socket.on('playerEntered', function(name, cb) {
     if (Server.players.every(function(player) {
       return player.name != name;
     })) {
-      Server.players.push(new Player(socket.id, name, colors.pop(), false));
+      Server.players.push(new Player(socket.id, token, name, colors.pop(), false));
+      console.log(Server.players);
       cb(true);
     } else cb(false);
 
@@ -84,14 +91,15 @@ io.on('connect', function(socket) {
           troops = --Server.territories[num].troops;
         io.emit('updateTroops', { troops: troops ? troops : '', num: num })
       });
-    });
 
-    socket.on('disconnect', function() {
-      Server.players.splice(Server.players.indexOf(findPlayerByID(socket.id)), 1);
-      io.emit('updateLobby', dataForLobby());
+      socket.on('disconnect', function() {
+        setTimeout(function() {
+          Server.players.splice(Server.players.indexOf(findPlayerByID(socket.id)), 1);
+          console.log('Player disconnected.');
+        }, 10000);
+      });
     });
   });
-
 });
 
 
