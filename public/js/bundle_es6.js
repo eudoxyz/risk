@@ -32,8 +32,7 @@ function drawPentagon(graphicsObj) {
 
 const WIDTH = 960;
 const HEIGHT = 640;
-const MULTIPLIER = Math.min(window.innerWidth / WIDTH, window.innerHeight / HEIGHT);
-const VERTICE_DIAMETER = 32 * MULTIPLIER;
+let MULTIPLIER, VERTICE_DIAMETER, KOORDINATE;
 
 
 const TERITORIJE = [
@@ -229,7 +228,7 @@ const KOORDINATE_ORIGINAL = [
   /* 41 */ [768, 521]
 
 ]
-const KOORDINATE = KOORDINATE_ORIGINAL.map(koordinata => [koordinata[0] * MULTIPLIER, koordinata[1] * MULTIPLIER]);
+
 
 const kartice = [
   // 1 - infantry
@@ -306,7 +305,18 @@ const bootState = {
     game.stage.backgroundColor = "#1291ee";
     game.stage.disableVisibilityChange = true;
 
+    window.addEventListener('load', this.setDimensions);
+    window.addEventListener('resize', this.setDimensions);
+
     game.state.start('load');
+
+  },
+
+  setDimensions: function() {
+
+    MULTIPLIER = Math.min(window.innerWidth / WIDTH, window.innerHeight / HEIGHT);
+    VERTICE_DIAMETER = 32 * MULTIPLIER;
+    KOORDINATE = KOORDINATE_ORIGINAL.map(koordinata => [koordinata[0] * MULTIPLIER, koordinata[1] * MULTIPLIER]);
 
   }
 
@@ -447,11 +457,11 @@ const playState = {
     );
     this.playerLabel.anchor.setTo(0, 1);
 
+    this.setAudio();
 
     Client.socket.emit('playStarted', null, function(data) {
-      this.drawEdges();
-      this.drawVertices.call(this, data);
-      this.setAudio();
+      this.data = data;
+      this.drawMap(data);
     }.bind(this));
 
 
@@ -464,6 +474,14 @@ const playState = {
     Client.socket.on('connectionEvent', function(isConnected) {
       this.setConnectionStatus(isConnected);
     });
+
+
+    window.addEventListener('resize', function() {
+      this.vertices.destroy();
+      this.edges.destroy();
+      game.scale.setGameSize(WIDTH * MULTIPLIER, HEIGHT * MULTIPLIER);
+      this.drawMap(this.data);
+    }.bind(this));
 
   },
 
@@ -478,10 +496,18 @@ const playState = {
   // HELPER FUNCTIONS //
   // ================ //
 
+  drawMap: function(data) {
+
+    this.drawEdges.call(this);
+    this.drawVertices.call(this, data);
+
+  },
+
+
   drawEdge: function(src, dst, pair) {
 
-    const grane = game.add.graphics();
-    grane.lineStyle(2, 0xF3F3F3, 1);
+    const edge = game.add.graphics();
+    edge.lineStyle(2, 0xF3F3F3, 1);
 
     // grana od aljaske do kamcatke
     if (pair[0] === 0 && pair[1] === 31) {
@@ -492,26 +518,30 @@ const playState = {
       const DISTANCE = dst[0] - src[0];
       const RADIUS = Math.sqrt(Math.pow(CURVATURE, 2) + Math.pow(DISTANCE / 2, 2));
 
-      grane.arc(MIDDLE_X, MIDDLE_Y + CURVATURE, RADIUS, - Math.asin(CURVATURE / RADIUS), Math.PI + Math.asin(CURVATURE / RADIUS), true, 96);
+       edge.arc(MIDDLE_X, MIDDLE_Y + CURVATURE, RADIUS, - Math.asin(CURVATURE / RADIUS), Math.PI + Math.asin(CURVATURE / RADIUS), true, 96);
 
     // sve ostale grane
     } else {
 
-      grane.moveTo(src[0], src[1]);
-      grane.lineTo(dst[0], dst[1]);
+       edge.moveTo(src[0], src[1]);
+       edge.lineTo(dst[0], dst[1]);
 
     }
+
+    return edge;
 
   },
 
 
   drawEdges: function() {
 
+    this.edges = game.add.group();
+
     const drawn = [...Array(42).keys()].map(i => Array(42)); // 42 x 42 niz
     for (let i = 0; i < GRAF.length; i++) {
       for (let j = 0; j < GRAF[i].length; j++) {
         if (!drawn[i][GRAF[i][j]]) {
-          this.drawEdge(KOORDINATE[i], KOORDINATE[GRAF[i][j]], [i, GRAF[i][j]]);
+          this.edges.add(this.drawEdge(KOORDINATE[i], KOORDINATE[GRAF[i][j]], [i, GRAF[i][j]]));
           drawn[i][GRAF[i][j]] = drawn[GRAF[i][j]][i] = true;
         }
       }
