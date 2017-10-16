@@ -452,9 +452,9 @@ const playState = {
 
     this.setAudio();
 
-    Client.socket.emit('playStarted', null, function(data) {
-      this.drawMap(data);
-      this.drawHud();
+    Client.socket.emit('playStarted', null, function(mapData, initTroops) {
+      this.drawMap(mapData);
+      this.drawHUD(initTroops);
     }.bind(this));
 
     Client.socket.on('updateTroops', function(data) {
@@ -627,7 +627,7 @@ const playState = {
     this.muteButton.frame = game.sound.mute ? 0 : 1;
   },
 
-  drawHUD : function () {
+  drawHUD : function (initTroops) {
     
     this.muteButton = game.add.button(20, 20, 'zvuk', this.toggleSound, this);
     this.muteButton.frame = 1;
@@ -641,8 +641,7 @@ const playState = {
       { font: '16px Arial', fill: '#F3F3F3', boundsAlignH: 'right' }
      );
     this.playerLabel.anchor.setTo(0, 1);
-    this.reserve = '';
-    this.armyInfo = game.add.text(game.world.width - 300, game.world.height - 20, this.reserve,
+    this.armyInfo = game.add.text(game.world.width - 300, game.world.height - 20, initTroops,
       { font: '16px Arial', fill: '#F3F3F3', boundsAlignH: 'right' });
      this.armyInfo.anchor.setTo(0, 1);
   }
