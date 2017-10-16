@@ -14,7 +14,7 @@ const playState = {
       vertice.label.text = data.troops;
     }.bind(this));
     Client.socket.on('updateMyTroops', function(troops) {
-      this.armyInfo.text = 'Troops remaining: ' + troops;
+      this.armyInfo.text = 'Troops available: ' + troops;
     }.bind(this));
     Client.socket.on('connectionEvent', function(isConnected) {
       this.setConnectionStatus(isConnected);
@@ -194,7 +194,7 @@ const playState = {
       { font: '16px Arial', fill: '#F3F3F3', boundsAlignH: 'right' }
      );
     this.playerLabel.anchor.setTo(0, 1);
-    this.armyInfo = game.add.text(game.world.width - 300, game.world.height - 20, "Troops remaining: " + initTroops,
+    this.armyInfo = game.add.text(game.world.width - 300, game.world.height - 20, "Troops available: " + initTroops,
       { font: '16px Arial', fill: '#F3F3F3', boundsAlignH: 'right' });
      this.armyInfo.anchor.setTo(0, 1);
   }
