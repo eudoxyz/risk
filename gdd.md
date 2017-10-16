@@ -5,5 +5,5 @@ Konstruisati neusmereni graf takav da su čvorovi teritorije, a grana između dv
 ## Milestone 2
 - [ ] Ubaciti kartice sa zadacima
 - [x] Ubaciti kartice sa teritorijama
-- [ ] Omogućiti da dva igrača mogu da podele teritorije naizmeničnim postavljanjem tenkića
-- [ ] Counter za tenkiće u rezervi
+- [x] Omogućiti da dva igrača mogu da podele teritorije postavljanjem tenkića
+- [x] Counter za tenkiće u rezervi
