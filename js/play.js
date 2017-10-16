@@ -122,18 +122,14 @@ const playState = {
       vertice.beginFill(data[i].color, 1);
 
       if (i < 9) vertice.drawCircle(0, 0, VERTICE_DIAMETER);
-      else if (i < 13)
-        drawPentagon(vertice);
+      else if (i < 13) drawPentagon(vertice);
       else if (i < 20) {
         vertice.drawRect(0, 0, VERTICE_DIAMETER, VERTICE_DIAMETER);
         vertice.pivot.x = VERTICE_DIAMETER / 2;
-        vertice.pivot.y = VERTICE_DIAMETER / 2;
-      } else if (i < 26) {
-        drawTriangle(vertice);
-      } else if (i < 38)
-        vertice.drawCircle(0, 0, VERTICE_DIAMETER);
-      else
-        drawPentagon(vertice);
+        vertice.pivot.y = VERTICE_DIAMETER / 2; }
+      else if (i < 26) drawTriangle(vertice);
+      else if (i < 38) vertice.drawCircle(0, 0, VERTICE_DIAMETER);
+      else drawPentagon(vertice);
 
       vertice.endFill();
       vertice.label = game.add.text(KOORDINATE[i][0], KOORDINATE[i][1], '', { font: '16px Arial', fill: '#ffffff' });

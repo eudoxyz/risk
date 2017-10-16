@@ -48,7 +48,6 @@ io.on('connect', function(socket) {
       return player.name != name;
     })) {
       Server.players.push(new Player(socket.id, token, name, colors.pop(), false));
-      console.log(Server.players);
       cb(true);
     } else cb(false);
 
