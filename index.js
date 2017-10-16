@@ -76,21 +76,17 @@ io.on('connect', function(socket) {
     });
 
     socket.on('playStarted', function(__, cb) {
-
+      // Početni broj tenkića (zavisi od broja igrača)
+      const initTroops = (Server.players.length - 2) * 5;
       Server.players.forEach(function(player) {
-        player.troops = (Server.players.length - 2) * 5;
-      }
+        player.troops = initTroops;
+      });
       cb(Server.territories.map(function(territory) {
         return {
           name: territory.owner.name,
-          color: territory.owner.color,
-          troops: territory.troops
+          color: territory.owner.color
         };
-      }));
-      // Početni broj tenkića (zavisi od broja igrača)
-      for (let player of Server.players) {
-        player.troops = player.troops - (Server.players.length-2)*5;
-      };
+      }), initTroops);
       socket.on('addTroop', function(num, isAdded) {
         if (Server.territories[num].owner.id !== socket.id) return;
 
