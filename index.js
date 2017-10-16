@@ -93,11 +93,11 @@ io.on('connect', function(socket) {
         let troops;
         if (isAdded) { 
           troops = ++Server.territories[num].troops;
-          findPlayerByID(socket.id).troops -= 1;
+          findPlayerByID(socket.id).troops += 1;
         }
         else if (Server.territories[num].troops > 0) {
           troops = --Server.territories[num].troops;
-          findPlayerByID(socket.id).troops += 1;
+          findPlayerByID(socket.id).troops -= 1;
         }
 
         io.emit('updateTroops', { troops: troops ? troops : '', num: num, army: findPlayerByID(socket.id).troops })
