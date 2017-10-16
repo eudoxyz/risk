@@ -450,38 +450,18 @@ const playState = {
 
   create: function() {
 
-    this.muteButton = game.add.button(20, 20, 'zvuk', this.toggleSound, this);
-    this.muteButton.frame = 1;
-
-    this.territoryLabel = game.add.text(game.world.width - 20, game.world.top + 20, '',
-      { font: '16px Arial', fill: '#F3F3F3', boundsAlignH: 'right' }
-    );
-    this.territoryLabel.anchor.setTo(1, 0);
-
-    this.playerLabel = game.add.text(20, game.world.height - 20, 'Drugi igrač je odsutan',
-      { font: '16px Arial', fill: '#F3F3F3', boundsAlignH: 'right' }
-    );
-    this.playerLabel.anchor.setTo(0, 1);
-
     this.setAudio();
 
     Client.socket.emit('playStarted', null, function(data) {
       this.drawMap(data);
+      this.drawHud();
     }.bind(this));
-
-
-    this.reserve = 40;
-    this.armyInfo = game.add.text(game.world.width - 300, game.world.height - 20, 'Troops remaining: ' + this.reserve,
-      { font: '16px Arial', fill: '#F3F3F3', boundsAlignH: 'right' });
-     this.armyInfo.anchor.setTo(0, 1);
 
     Client.socket.on('updateTroops', function(data) {
       const vertice = this.vertices.children[data.num];
       vertice.label.text = data.troops;
       this.armyInfo.text = 'Troops remaining: ' + data.army;
     }.bind(this));
-
-
 
     Client.socket.on('connectionEvent', function(isConnected) {
       this.setConnectionStatus(isConnected);
@@ -646,8 +626,25 @@ const playState = {
     // Change the frame of the button
     this.muteButton.frame = game.sound.mute ? 0 : 1;
   },
-  displayInfo: function(disp, troops) {
 
+  drawHUD : function () {
+    
+    this.muteButton = game.add.button(20, 20, 'zvuk', this.toggleSound, this);
+    this.muteButton.frame = 1;
+
+    this.territoryLabel = game.add.text(game.world.width - 20, game.world.top + 20, '',
+      { font: '16px Arial', fill: '#F3F3F3', boundsAlignH: 'right' }
+     );
+
+    this.territoryLabel.anchor.setTo(1, 0);
+    this.playerLabel = game.add.text(20, game.world.height - 20, 'Drugi igrač je odsutan',
+      { font: '16px Arial', fill: '#F3F3F3', boundsAlignH: 'right' }
+     );
+    this.playerLabel.anchor.setTo(0, 1);
+    this.reserve = '';
+    this.armyInfo = game.add.text(game.world.width - 300, game.world.height - 20, this.reserve,
+      { font: '16px Arial', fill: '#F3F3F3', boundsAlignH: 'right' });
+     this.armyInfo.anchor.setTo(0, 1);
   }
 
 };
