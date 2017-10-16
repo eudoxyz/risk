@@ -101,8 +101,8 @@ io.on('connect', function(socket) {
           player.troops ++;
         }
 
-        io.emit('updateTroops', { troops: troops ? troops : '', num: num })
-        Socket.emit('updateMyTroops', {army :findPlayerByID(socket.id).troops  })
+        io.emit('updateTroops', { troops: troops ? troops : '', num: num });
+        socket.emit('updateMyTroops', player.troops);
       });
 
       socket.on('disconnect', function() {
