@@ -20,12 +20,14 @@ Server.listen(port, function() {
 
 const colors = [0x44cd7e, 0xa5280e, 0x3716dd];
 
-function Player(id, token, name, color, isReady) {
+function Player(id, token, name, color, isReady, troops) {
   this.id = id;
   this.token = token;
   this.name = name;
   this.color = color;
   this.isReady = isReady;
+  this.troops = troops;
+
 }
 
 function Territory(owner, troops) {
@@ -47,7 +49,7 @@ io.on('connect', function(socket) {
     if (Server.players.every(function(player) {
       return player.name != name;
     })) {
-      Server.players.push(new Player(socket.id, token, name, colors.pop(), false));
+      Server.players.push(new Player(socket.id, token, name, colors.pop(), false, 40));
       console.log(Server.players);
       cb(true);
     } else cb(false);
@@ -81,15 +83,23 @@ io.on('connect', function(socket) {
           troops: territory.troops
         };
       }));
-
+      // Početni broj tenkića (zavisi od broja igrača)
+      for (let player of Server.players) {
+        player.troops = player.troops - (Server.players.length-2)*5;
+      }
       socket.on('addTroop', function(num, isAdded) {
         if (Server.territories[num].owner.id !== socket.id) return;
 
         let troops;
-        if (isAdded) troops = ++Server.territories[num].troops;
-        else if (Server.territories[num].troops > 0)
+        if (isAdded) { 
+          troops = ++Server.territories[num].troops;
+          findPlayerByID(socket.id).troops -= 1;
+        }
+        else if (Server.territories[num].troops > 0) {
           troops = --Server.territories[num].troops;
-        io.emit('updateTroops', { troops: troops ? troops : '', num: num })
+          findPlayerByID(socket.id).troops += 1;
+        }
+        io.emit('updateTroops', { troops: troops ? troops : '', num: num, army: findPlayerByID(socket.id).troops })
       });
 
       socket.on('disconnect', function() {

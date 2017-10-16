@@ -22,10 +22,17 @@ const playState = {
     }.bind(this));
 
 
+    this.reserve = 40;
+    this.armyInfo = game.add.text(game.world.width - 300, game.world.height - 20, 'Troops remaining: ' + this.reserve,
+      { font: '16px Arial', fill: '#F3F3F3', boundsAlignH: 'right' });
+     this.armyInfo.anchor.setTo(0, 1);
+
     Client.socket.on('updateTroops', function(data) {
       const vertice = this.vertices.children[data.num];
       vertice.label.text = data.troops;
+      this.armyInfo.text = 'Troops remaining: ' + data.army;
     }.bind(this));
+
 
 
     Client.socket.on('connectionEvent', function(isConnected) {
@@ -171,8 +178,8 @@ const playState = {
 
   setAudio: function() {
 
-    this.backgroundMusic = game.add.audio('nightRain');
-    this.backgroundMusic.loop = true;
+    //this.backgroundMusic = game.add.audio('nightRain');
+    //this.backgroundMusic.loop = true;
     // this.backgroundMusic.play();
 
   },
@@ -191,6 +198,8 @@ const playState = {
     // Change the frame of the button
     this.muteButton.frame = game.sound.mute ? 0 : 1;
   },
+  displayInfo: function(disp, troops) {
 
+  }
 
 };
