@@ -77,9 +77,9 @@ io.on('connect', function(socket) {
 
     socket.on('playStarted', function(__, cb) {
       // Početni broj tenkića (zavisi od broja igrača)
-      const initTroops = 40-(Server.players.length - 2) * 5;
+      const initTroops = (Server.players.length - 2) * 5;
       Server.players.forEach(function(player) {
-        player.troops = initTroops;
+        player.troops = initTroops;                                                                                                                                       
       });
       cb(Server.territories.map(function(territory) {
         return {
@@ -91,13 +91,14 @@ io.on('connect', function(socket) {
         if (Server.territories[num].owner.id !== socket.id) return;
 
         let troops;
+        const player = findPlayerByID(socket.id)
         if (isAdded) { 
           troops = ++Server.territories[num].troops;
-          findPlayerByID(socket.id).troops -= 1;
+          player.troops --;
         }
         else if (Server.territories[num].troops > 0) {
           troops = --Server.territories[num].troops;
-          findPlayerByID(socket.id).troops += 1;
+          player.troops ++;
         }
 
         io.emit('updateTroops', { troops: troops ? troops : '', num: num, army: findPlayerByID(socket.id).troops })

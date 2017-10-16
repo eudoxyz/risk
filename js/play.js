@@ -12,9 +12,10 @@ const playState = {
     Client.socket.on('updateTroops', function(data) {
       const vertice = this.vertices.children[data.num];
       vertice.label.text = data.troops;
-      this.armyInfo.text = 'Troops remaining: ' + data.army;
     }.bind(this));
-
+    Client.socket.on('updateMyTroops', function(army) {
+      this.armyInfo.text = 'Troops remaining: ' + army.army;
+    }.bind(this));
     Client.socket.on('connectionEvent', function(isConnected) {
       this.setConnectionStatus(isConnected);
     });
