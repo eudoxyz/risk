@@ -20,11 +20,12 @@ Server.listen(port, function() {
 
 const colors = [0x44cd7e, 0xa5280e, 0x3716dd];
 
-function Player(id, token, name, color, isReady) {
+function Player(id, token, name, color, troops, isReady) {
   this.id = id;
   this.token = token;
   this.name = name;
   this.color = color;
+  this.troops = troops;
   this.isReady = isReady;
 }
 
@@ -47,7 +48,7 @@ io.on('connect', function(socket) {
     if (Server.players.every(function(player) {
       return player.name != name;
     })) {
-      Server.players.push(new Player(socket.id, token, name, colors.pop(), false));
+      Server.players.push(new Player(socket.id, token, name, colors.pop(), null, false));
       cb(true);
     } else cb(false);
 
@@ -73,22 +74,32 @@ io.on('connect', function(socket) {
     });
 
     socket.on('playStarted', function(__, cb) {
+      const initTroops = 40 - (Server.players.length - 2) * 5;
+      Server.players.forEach(function(player) {
+        player.troops = initTroops;
+      });
       cb(Server.territories.map(function(territory) {
         return {
           name: territory.owner.name,
-          color: territory.owner.color,
-          troops: territory.troops
+          color: territory.owner.color
         };
-      }));
+      }), initTroops);
 
       socket.on('addTroop', function(num, isAdded) {
         if (Server.territories[num].owner.id !== socket.id) return;
 
         let troops;
-        if (isAdded) troops = ++Server.territories[num].troops;
-        else if (Server.territories[num].troops > 0)
+        const player = findPlayerByID(socket.id);
+        if (isAdded) {
+          troops = ++Server.territories[num].troops;
+          player.troops--;
+        } else if (Server.territories[num].troops > 0) {
           troops = --Server.territories[num].troops;
-        io.emit('updateTroops', { troops: troops ? troops : '', num: num })
+          player.troops++;
+        }
+
+        io.emit('updateTroops', { troops: troops ? troops : '', num: num });
+        socket.emit('updateMyTroops', player.troops);
       });
 
       socket.on('disconnect', function() {

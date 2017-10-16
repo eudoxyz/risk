@@ -332,7 +332,7 @@ const loadState = {
 
   preload: function() {
 
-    game.load.audio('nightRain', ['snd/airtone_-_nightRain.ogg']);
+    // game.load.audio('nightRain', ['snd/airtone_-_nightRain.ogg']);
 
     game.load.spritesheet('zvuk', 'img/zvuk.png', 48, 48,2);
     game.load.image('sound', 'img/sound.png');
@@ -450,36 +450,24 @@ const playState = {
 
   create: function() {
 
-    this.muteButton = game.add.button(20, 20, 'zvuk', this.toggleSound, this);
-    this.muteButton.frame = 1;
-
-    this.territoryLabel = game.add.text(game.world.width - 20, game.world.top + 20, '',
-      { font: '16px Arial', fill: '#F3F3F3', boundsAlignH: 'right' }
-    );
-    this.territoryLabel.anchor.setTo(1, 0);
-
-    this.playerLabel = game.add.text(20, game.world.height - 20, 'Drugi igrač je odsutan',
-      { font: '16px Arial', fill: '#F3F3F3', boundsAlignH: 'right' }
-    );
-    this.playerLabel.anchor.setTo(0, 1);
-
     this.setAudio();
 
-    Client.socket.emit('playStarted', null, function(data) {
-      this.drawMap(data);
+    Client.socket.emit('playStarted', null, function(mapData, initTroops) {
+      this.drawMap(mapData);
+      this.drawHUD(initTroops);
     }.bind(this));
-
 
     Client.socket.on('updateTroops', function(data) {
       const vertice = this.vertices.children[data.num];
       vertice.label.text = data.troops;
     }.bind(this));
+    Client.socket.on('updateMyTroops', function(troops) {
+      this.armyInfo.text = 'Troops available: ' + troops;
+    }.bind(this));
 
-
-    Client.socket.on('connectionEvent', function(isConnected) {
-      this.setConnectionStatus(isConnected);
-    });
-
+    // Client.socket.on('connectionEvent', function(isConnected) {
+    //   this.setConnectionStatus(isConnected);
+    // });
 
     window.addEventListener('resize', function() {
       this.vertices.destroy();
@@ -570,18 +558,14 @@ const playState = {
       vertice.beginFill(data[i].color, 1);
 
       if (i < 9) vertice.drawCircle(0, 0, VERTICE_DIAMETER);
-      else if (i < 13)
-        drawPentagon(vertice);
+      else if (i < 13) drawPentagon(vertice);
       else if (i < 20) {
         vertice.drawRect(0, 0, VERTICE_DIAMETER, VERTICE_DIAMETER);
         vertice.pivot.x = VERTICE_DIAMETER / 2;
-        vertice.pivot.y = VERTICE_DIAMETER / 2;
-      } else if (i < 26) {
-        drawTriangle(vertice);
-      } else if (i < 38)
-        vertice.drawCircle(0, 0, VERTICE_DIAMETER);
-      else
-        drawPentagon(vertice);
+        vertice.pivot.y = VERTICE_DIAMETER / 2; }
+      else if (i < 26) drawTriangle(vertice);
+      else if (i < 38) vertice.drawCircle(0, 0, VERTICE_DIAMETER);
+      else drawPentagon(vertice);
 
       vertice.endFill();
       vertice.label = game.add.text(KOORDINATE[i][0], KOORDINATE[i][1], '', { font: '16px Arial', fill: '#ffffff' });
@@ -617,18 +601,30 @@ const playState = {
   },
 
 
-  setAudio: function() {
+  drawHUD: function(initTroops) {
 
-    this.backgroundMusic = game.add.audio('nightRain');
-    this.backgroundMusic.loop = true;
-    // this.backgroundMusic.play();
+    this.muteButton = game.add.button(20, 20, 'zvuk', this.toggleSound, this);
+    this.muteButton.frame = 1;
+
+    this.territoryLabel = game.add.text(game.world.width - 20, game.world.top + 20, '',
+      { font: '16px Arial', fill: '#F3F3F3', boundsAlignH: 'right' }
+    );
+    this.territoryLabel.anchor.setTo(1, 0);
+
+    this.armyInfo = game.add.text(game.world.width - 300, game.world.height - 20, 'Troops available: ' + initTroops,
+      { font: '16px Arial', fill: '#F3F3F3', boundsAlignH: 'right' }
+    );
+    this.armyInfo.anchor.setTo(1, 0);
 
   },
 
 
-  setConnectionStatus: function(isConnected) {
-    if (isConnected) this.playerLabel.text = 'Drugi igrač je prisutan';
-    else this.playerLabel.text = 'Drugi igrač je odsutan';
+  setAudio: function() {
+
+    // this.backgroundMusic = game.add.audio('nightRain');
+    // this.backgroundMusic.loop = true;
+    // this.backgroundMusic.play();
+
   },
 
 
@@ -638,8 +634,7 @@ const playState = {
     game.sound.mute = ! game.sound.mute;
     // Change the frame of the button
     this.muteButton.frame = game.sound.mute ? 0 : 1;
-  },
-
+  }
 
 };
 
