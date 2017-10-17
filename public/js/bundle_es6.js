@@ -311,18 +311,7 @@ const bootState = {
     game.stage.backgroundColor = "#1291ee";
     game.stage.disableVisibilityChange = true;
 
-    window.addEventListener('load', this.setDimensions);
-    window.addEventListener('resize', this.setDimensions);
-
     game.state.start('load');
-
-  },
-
-  setDimensions: function() {
-
-    MULTIPLIER = Math.min(window.innerWidth / WIDTH, window.innerHeight / HEIGHT);
-    VERTICE_DIAMETER = 32 * MULTIPLIER;
-    KOORDINATE = KOORDINATE_ORIGINAL.map(koordinata => [koordinata[0] * MULTIPLIER, koordinata[1] * MULTIPLIER]);
 
   }
 
@@ -678,8 +667,11 @@ const setupState = {
 
 };
 
-// const game = new Phaser.Game(WIDTH, HEIGHT, Phaser.AUTO, 'root');
-const game = new Phaser.Game(window.innerWidth, window.innerHeight, Phaser.AUTO, 'root');
+MULTIPLIER = Math.min(window.innerWidth / WIDTH, window.innerHeight / HEIGHT);
+VERTICE_DIAMETER = 32 * MULTIPLIER;
+KOORDINATE = KOORDINATE_ORIGINAL.map(koordinata => [koordinata[0] * MULTIPLIER, koordinata[1] * MULTIPLIER]);
+
+const game = new Phaser.Game(WIDTH * MULTIPLIER, HEIGHT * MULTIPLIER, Phaser.AUTO, 'root');
 
 game.state.add('boot', bootState);
 game.state.add('load', loadState);
