@@ -37,6 +37,8 @@ function Territory(owner, troops) {
 Server.players = [];
 Server.territories = [];
 
+Server.players.push(new Player(null, null, 'Dummy', 0xcc99ff, null, true));
+
 io.on('connect', function(socket) {
 
   let token;
@@ -56,16 +58,15 @@ io.on('connect', function(socket) {
       io.emit('updateLobby', dataForLobby());
 
       socket.on('ready', function(isReady) {
-        findPlayerByID(socket.id).ready = isReady;
+        findPlayerByID(socket.id).isReady = isReady;
         if (Server.players.length > 1) {
           const allReady = Server.players.every(function(player) {
-            return player.ready === true;
+            return player.isReady === true;
           });
           if (allReady) {
             io.emit('allReady');
-            for (let i = 0; i < 42; i++) {
-              Server.territories.push(new Territory(Server.players[i % Server.players.length], 0))
-            }
+            for (let i = 0; i < 42; i++)
+              Server.territories.push(new Territory(Server.players[i % Server.players.length], 0));
             Server.territories = _.shuffle(Server.territories);
           }
         }
@@ -106,9 +107,14 @@ io.on('connect', function(socket) {
         setTimeout(function() {
           Server.players.splice(Server.players.indexOf(findPlayerByID(socket.id)), 1);
           console.log('Player disconnected.');
-        }, 10000);
+        }, 0);
       });
     });
+
+    socket.on('disconnect', function() {
+      //
+    });
+
   });
 });
 
@@ -119,6 +125,6 @@ function findPlayerByID(id) {
 
 function dataForLobby() {
   return {
-    'players': Server.players.map(x => ({ 'name': x.name, 'ready': x.ready })),
+    'players': Server.players.map(x => ({ 'name': x.name, 'ready': x.isReady })),
   }
 }

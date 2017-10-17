@@ -57,3 +57,8 @@ label {
 .countdown {
   margin-left: 24px;
 }
+
+.dev-panel {
+  position: absolute;
+  top: 1em; right: 1em;
+}

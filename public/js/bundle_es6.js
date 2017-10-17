@@ -356,6 +356,7 @@ const menuState = {
     const nameInput = newElement('input', {
       className: 'name-input',
       type: 'text',
+      value: 'Me',
       autofocus: true
     });
     form.addEventListener('submit', function(event) {
@@ -402,15 +403,19 @@ const lobbyState = {
       });
       document.querySelector('.lobby-wrapper').appendChild(countDownDiv);
       document.querySelector('input[type=checkbox]').disabled = true;
+      /*
       let counter = 3;
       const countDownFn = setInterval(function() {
         countDownDiv.innerHTML = 'Play starting in ' + --counter;
         if (counter === 0) {
           clearInterval(countDownFn);
           document.querySelector('.lobby-wrapper').remove();
-          game.state.start('play');
+          game.state.start('setup');
         }
       }, 1000);
+      */
+      document.querySelector('.lobby-wrapper').remove();
+      game.state.start('setup');
     });
 
     Client.socket.emit('lobbyCreated');
@@ -427,7 +432,6 @@ const lobbyState = {
     });
     const joinCheckbox = newElement('input', {
       type: 'checkbox',
-      autofocus: true
     });
     joinCheckbox.addEventListener('click', function() {
       if (this.checked) Client.socket.emit('ready', true);
@@ -441,14 +445,17 @@ const lobbyState = {
     lobbyWrapper.appendChild(joinLabel);
     lobbyWrapper.appendChild(joinCheckbox);
     document.getElementById('root').appendChild(lobbyWrapper);
+    joinCheckbox.focus();
 
   }
 
 }
 
-const playState = {
+const setupState = {
 
   create: function() {
+
+    this.drawDevPanel.call(this);
 
     this.setAudio();
 
@@ -576,10 +583,10 @@ const playState = {
           // play sound
           Client.socket.emit('addTroop', i, true);
         }
-        if (click.rightButton.isDown) {
-          // play sound
-          Client.socket.emit('addTroop', i, false);
-        }
+        // if (click.rightButton.isDown) {
+        //   // play sound
+        //   Client.socket.emit('addTroop', i, false);
+        // }
       }, this);
 
       vertice.events.onInputOver.add(function(vertice) {
@@ -603,18 +610,23 @@ const playState = {
 
   drawHUD: function(initTroops) {
 
+    this.HUD = game.add.group();
+
     this.muteButton = game.add.button(20, 20, 'zvuk', this.toggleSound, this);
     this.muteButton.frame = 1;
+    this.HUD.add(this.muteButton);
 
     this.territoryLabel = game.add.text(game.world.width - 20, game.world.top + 20, '',
       { font: '16px Arial', fill: '#F3F3F3', boundsAlignH: 'right' }
     );
     this.territoryLabel.anchor.setTo(1, 0);
+    this.HUD.add(this.territoryLabel);
 
     this.armyInfo = game.add.text(game.world.width - 300, game.world.height - 20, 'Troops available: ' + initTroops,
-      { font: '16px Arial', fill: '#F3F3F3', boundsAlignH: 'right' }
+      { font: '24px Arial', fill: '#F3F3F3', boundsAlignH: 'right' }
     );
     this.armyInfo.anchor.setTo(1, 0);
+    this.HUD.add(this.armyInfo);
 
   },
 
@@ -634,6 +646,34 @@ const playState = {
     game.sound.mute = ! game.sound.mute;
     // Change the frame of the button
     this.muteButton.frame = game.sound.mute ? 0 : 1;
+  },
+
+
+  drawDevPanel: function() {
+
+    const devPanel = newElement('fieldset', {
+      className: 'dev-panel'
+    });
+    const legend = newElement('legend', {
+      innerHTML: 'Dev Panel'
+    });
+
+    devPanel.appendChild(legend);
+    document.getElementById('root').appendChild(devPanel);
+    devPanel.style.width = MULTIPLIER * 150 + 'px';
+    devPanel.style.height = MULTIPLIER * 64 + 'px';
+
+    // buttons
+
+    const redrawHUDButton = newElement('button', {
+      innerHTML: 'Redraw HUD (ne radi zasad)'
+    });
+    redrawHUDButton.addEventListener('click', function() {
+      this.HUD.destroy();
+      this.drawHUD(0);
+    }.bind(this));
+    devPanel.appendChild(redrawHUDButton );
+
   }
 
 };
@@ -645,6 +685,6 @@ game.state.add('boot', bootState);
 game.state.add('load', loadState);
 game.state.add('menu', menuState);
 game.state.add('lobby', lobbyState);
-game.state.add('play', playState);
+game.state.add('setup', setupState);
 
 game.state.start('boot');

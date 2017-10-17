@@ -5,6 +5,6 @@ game.state.add('boot', bootState);
 game.state.add('load', loadState);
 game.state.add('menu', menuState);
 game.state.add('lobby', lobbyState);
-game.state.add('play', playState);
+game.state.add('setup', setupState);
 
 game.state.start('boot');

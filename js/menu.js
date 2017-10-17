@@ -6,6 +6,7 @@ const menuState = {
     const nameInput = newElement('input', {
       className: 'name-input',
       type: 'text',
+      value: 'Me',
       autofocus: true
     });
     form.addEventListener('submit', function(event) {

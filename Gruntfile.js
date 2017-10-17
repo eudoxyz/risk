@@ -14,7 +14,7 @@ module.exports = function(grunt) {
           'js/load.js',
           'js/menu.js',
           'js/lobby.js',
-          'js/play.js',
+          'js/setup.js',
           'js/game.js',
         ],
         dest: 'public/js/bundle_es6.js'

@@ -24,15 +24,19 @@ const lobbyState = {
       });
       document.querySelector('.lobby-wrapper').appendChild(countDownDiv);
       document.querySelector('input[type=checkbox]').disabled = true;
+      /*
       let counter = 3;
       const countDownFn = setInterval(function() {
         countDownDiv.innerHTML = 'Play starting in ' + --counter;
         if (counter === 0) {
           clearInterval(countDownFn);
           document.querySelector('.lobby-wrapper').remove();
-          game.state.start('play');
+          game.state.start('setup');
         }
       }, 1000);
+      */
+      document.querySelector('.lobby-wrapper').remove();
+      game.state.start('setup');
     });
 
     Client.socket.emit('lobbyCreated');
@@ -49,7 +53,6 @@ const lobbyState = {
     });
     const joinCheckbox = newElement('input', {
       type: 'checkbox',
-      autofocus: true
     });
     joinCheckbox.addEventListener('click', function() {
       if (this.checked) Client.socket.emit('ready', true);
@@ -63,6 +66,7 @@ const lobbyState = {
     lobbyWrapper.appendChild(joinLabel);
     lobbyWrapper.appendChild(joinCheckbox);
     document.getElementById('root').appendChild(lobbyWrapper);
+    joinCheckbox.focus();
 
   }
 
